@@ -1,0 +1,22 @@
+{
+    "users": [
+      { "id": 1, "email": "juan@juan.com", "pass": "juan", "role": "client" },
+      { "id": 2, "email": "manu@manu.com", "pass": "manu", "role": "public" },
+      { "id": 3, "email": "admin@admin.com", "pass": "admin", "role": "admin" }
+    ],
+    "users_meta": [
+      { "id": 1, "name": "Juan", "surname": "Rodriguez", "user_id": 1, "date": "01/01/2023", "countrie": "Argentina", "city": "Cordoba" },
+      { "id": 1, "name": "Manuel", "surname": "Leiva", "user_id": 2, "date": "01/01/2023", "countrie": "Argentina", "city": "Cordoba" },
+      { "id": 1, "name": "Super", "surname": "Sdmin", "user_id": 3, "date": "01/01/2023", "countrie": "Argentina", "city": "Cordoba" }
+    ],
+    "transactions": [
+        { "id": 1, "user_id":1, "date": "07/03/2023", "category_id": 1, "details": "compra en el super", "debe": 5081, "haber": 0 },
+        { "id": 1, "user_id":1, "date": "07/03/2023", "category_id": 2, "details": "Gastos mantenimiento cuenta bancaria", "debe": 3200, "haber": 0 },
+        { "id": 1, "user_id":1, "date": "07/03/2023", "category_id": 1, "details": "Almuerzo en el trabajo", "debe": 655, "haber": 0 }
+      ],
+    "categories_expenses": [
+    { "id": 1, "description": "Comida", "user_id": 1 },
+    { "id": 2, "description": "Otros", "user_id": 1 },
+    { "id": 3, "description": "Tarjeta Santander Credito", "user_id": 1 }
+    ]
+  }
