@@ -7,6 +7,7 @@ import { PublicComponent } from './public.component';
 import { LoginComponent } from './login/containers/login.component';
 import { BlogComponent } from './blog/containers/blog.component';
 import { SharedModule } from '../core/shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -19,13 +20,13 @@ import { SharedModule } from '../core/shared/shared.module';
   imports: [
     CommonModule,
     PublicRoutingModule,
-    SharedModule
+    SharedModule,
+    ReactiveFormsModule
   ],
   exports:[],
   providers: []
 })
 export class PublicModule { 
   constructor(){
-    console.log('se cargo el modulo Public')
   }
 }

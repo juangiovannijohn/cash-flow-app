@@ -1,1 +1,24 @@
-<p>login works!</p>
+<div class="grid min-h-screen place-content-center">
+    <div class="bg-slate-50 p-8">
+        <h2 class="text-2xl	 text-amber-400">Login</h2>
+        <form autocomplete="off" class="grid grid-cols-1" [formGroup]="login" (ngSubmit)="onSubmit()">
+            <label for="email" class="m-4" for="">Email</label>
+            <input [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' " required name="email" class="m-4" type="email"  formControlName="email">
+            <div  class="alert">
+                <div [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' " class="" *ngIf="campoNoValido('email')">
+                    Ingrese un email valido</div>
+            </div>
+            
+            <label for="pass" class="m-4" for="">Pass</label>
+            <input name="pass" class="m-4" type="password"  formControlName="pass">
+            <span class="text-muted" *ngIf="campoNoValido('pass')">Password es requerido</span>
+
+            <input [disabled]="!login.valid"  [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' "  class="m-4 bg-slate-200" type="submit" value="Ingresar">
+        </form>
+        <div *ngIf="loginError">
+          <div class="ng-invalid">
+            Usuario o Password incorrectos
+          </div>
+        </div>
+    </div>
+</div>

@@ -17,6 +17,5 @@ import { SharedModule } from './shared/shared.module';
 })
 export class CoreModule { 
   constructor(){
-    console.log('se cargo el modulo Core')
   }
 }

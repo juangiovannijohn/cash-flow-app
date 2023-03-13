@@ -25,6 +25,5 @@ import { RouterModule } from '@angular/router';
 })
 export class SharedModule {
   constructor(){
-    console.log('se cargo el modulo Shared')
   }
  }

@@ -19,6 +19,5 @@ import { CoreModule } from './core/core.module';
 })
 export class AppModule { 
   constructor(){
-    console.log('se cargo el modulo app module')
   }
 }
