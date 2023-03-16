@@ -5,6 +5,7 @@ const {dbConexion} = require('./config/mongo')
 
 const app = express();
 app.use(cors());
+app.use(express.json()); //deciler a la app y express que esten preparados de recibir jsons
 const port = process.env.PORT || 3000
 
 //lamamos rutas

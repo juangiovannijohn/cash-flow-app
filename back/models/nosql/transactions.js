@@ -1,22 +1,47 @@
 const mongoose = require('mongoose');
 
-const TransactionScheme = new mongoose.Schema(
-    {
-        user_id:{type:Number},
-        category:
-        {
-            category_id: {type:Number}, //luego traer el nombre
-            category_name:{type:String}
-        },
-        description:{type:String},
-        debe:{type:Number},
-        haber:{type:Number}
+const TransactionSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     },
-
-    {
-        timestamps: true, //TODO createdAt, updateAt
-        versionKey: false
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+      validate: {
+        validator: async function (value) {
+          const category = await mongoose.model('Category').findById(value);
+          if (!category) {
+            return false;
+          }
+          return category.user.toString() === this.user.toString();
+        },
+        message: 'Categoria inválida'
+      }
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    amount: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return value > 0;
+        },
+        message: 'El monto debe ser mayor a cero.'
+      }
     }
+  },
+  {
+    timestamps: true,
+    versionKey: false
+  }
 );
 
-module.exports = mongoose.model('transactions', TransactionScheme); // el primer valor es el nombre de la tabla/coleccion
+const Transaction = mongoose.model('Transaction', TransactionSchema);
+module.exports = Transaction

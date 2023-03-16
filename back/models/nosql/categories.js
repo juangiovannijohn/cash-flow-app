@@ -1,9 +1,18 @@
 const mongoose = require('mongoose');
 
-const CategoryScheme = new mongoose.Schema(
+const categorySchema = new mongoose.Schema(
     {
-        name:{type:String},
-        user_id:{type:Number}, //relacionado con otra coleccion ?
+        name:{type:String,  required: true},
+        type: {
+            type: String,
+            enum: ['Gasto', 'Ingreso'],
+            required: true
+          },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+          }, 
 
     },
 
@@ -13,4 +22,5 @@ const CategoryScheme = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model('categories', CategoryScheme); // el primer valor es el nombre de la tabla/coleccion
+const Category =  mongoose.model('Category', categorySchema); // el primer valor es el nombre de la tabla/coleccion
+module.exports = Category
