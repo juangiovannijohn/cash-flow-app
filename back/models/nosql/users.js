@@ -9,10 +9,12 @@ const userSchema = new mongoose.Schema({
   birthday: { type: Date, max: Date.now },
   country: { type: String },
   city: { type: String },
-  categories: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category'
-  }]
+  categories: [
+    {
+      _id: { type: mongoose.Schema.Types.ObjectId },
+      name: { type: String, required: true }
+    }
+  ]
 }, {
   timestamps: true, // createdAt, updatedAt
   versionKey: false

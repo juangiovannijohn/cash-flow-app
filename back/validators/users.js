@@ -9,7 +9,7 @@ const validatorCreateUser = [
     check('birthday').exists().isLength({ max:100}),
     check('country').exists().isLength({ max:100}),
     check('city').exists().isLength({ max:100}),
-    check('categories').exists().isMongoId(),
+    check('categories').exists(),
     (req, res, next)=> {
         return validateResults(req, res, next);
          
