@@ -1,7 +1,52 @@
 const { transactionModel, userModel } = require('./../models');
-const getTransactions = ( ) => { }
+const getTransactions = async (req, res) => {
+  const { userId } = req.body;
+  let msg;
+  try {
+    const transactions = await transactionModel.find({user: userId });
+     //console.log({transactions})
+    if (transactions.length != 0) {
+      msg = 'Si tiene transacciones'
+    }else{
+      msg = 'No tiene transacciones'
+    }
+    res.status(200).json({
+      ok: true,
+      transactions,
+      msg
+    });
 
-const getTransaction = ( ) => { }
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).json({
+      ok:false,
+      msg: error.message 
+    });
+  }
+};
+
+const getTransaction = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const transaction = await transactionModel.findById(_id);
+    if (!transaction) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'No se encontró la transacción'
+      });
+    }
+    res.status(200).json({
+      ok: true,
+      data: transaction
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      ok: false,
+      msg: error.message
+    });
+  }
+};
 
 const createTransaction = async (req, res) => {
     const { user, category, description, debit, credit } = req.body;
@@ -51,10 +96,71 @@ const createTransaction = async (req, res) => {
   };
   
 
-const updateTransaction = () => {}
+const updateTransaction = async (req, res) => {
+  const { _id, category, description, debit, credit } = req.body;
+  try {
+    const transaction = await transactionModel.findById(_id);
+    if (!transaction) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'La transacción no existe'
+      });
+    }
+    if (category) {
+      transaction.category.name = category;
+    }
+    if (description) {
+      transaction.description = description;
+    }
+    if (debit) {
+      transaction.debit = debit;
+    }else if(debit == 0){
+      transaction.debit = 0;
+    }
+    if (credit) {
+      transaction.credit = credit;
+    }else if(credit == 0){
+      transaction.credit = 0;
+    }
+    const updatedTransaction = await transaction.save();
+    res.status(200).json({
+      ok: true,
+      message: 'Transacción actualizada exitosamente',
+      data: updatedTransaction
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al actualizar la transacción'
+    });
+  }
+};
 
 
-const deleteTransaction = ( ) => {}
+const deleteTransaction = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const deletedTransaction = await transactionModel.findByIdAndDelete(_id);
+    if (!deletedTransaction) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'No se encontró la transacción'
+      });
+    }
+    res.status(200).json({
+      ok: true,
+      msg: 'Transacción eliminada exitosamente',
+      data: deletedTransaction
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      ok: false,
+      msg: error.message
+    });
+  }
+};
 
 
 
@@ -63,5 +169,9 @@ const deleteTransaction = ( ) => {}
 
 
 module.exports = { 
-    createTransaction
+    getTransactions,
+    getTransaction,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction
 }
