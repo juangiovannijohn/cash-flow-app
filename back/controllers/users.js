@@ -1,6 +1,56 @@
 const { userModel } = require("./../models");
 const mongoose = require("mongoose");
 
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        ok: false,
+        error: "Usuario o contraseña incorrectos",
+      });
+    }
+    if(user.pass != password){
+      return res.status(401).json({
+        ok: false,
+        error: "Usuario o contraseña incorrectos",
+      });
+    }
+/*    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        ok: false,
+        error: "Usuario o contraseña incorrectos",
+      });
+    }
+*/
+    const userData = {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      lastname: user.lastname,
+      birthday: user.birthday,
+      country: user.country,
+      city: user.city,
+      categories: user.categories,
+    };
+
+    return res.status(200).json({
+      ok: true,
+      user: userData,
+      token: "token_de_autenticación",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      error: "Error al iniciar sesión",
+    });
+  }
+};
 const getUsers = async (req, res) => {
   try {
     const data = await userModel.find({});
@@ -365,6 +415,7 @@ const renewUser = async (req, res) => {
 };
 
 module.exports = {
+  login,
   getUserById,
   getUserByEmail,
   getUsers,

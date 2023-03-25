@@ -13,15 +13,6 @@ baseUrl = environment.baseUrl
 _usuario: any = ''
 
   constructor(private http: HttpClient) {
-
-    //TODO: encadenar 2 observables para llenar el objeto de usuario correctamente
-  //  this.getUsers('juan@juan.com').pipe(
-  //   mergeMap( (res:any) => 
-  //     this.userMeta(res.id))
-  //  ).subscribe({
-  //   next: userMetadata => console.log('')
-  //  })
-
    }
 
   get Usuario(){
@@ -91,40 +82,19 @@ _usuario: any = ''
   // }
   
   login(email:string, pass:string){
-    const url = `${this.baseUrl}users`
-    const urlDev = `${this.baseUrl}usuario_prueba`
-    console.log(urlDev)
-    return this.http.get(urlDev).pipe(
+    const url = `${this.baseUrl}users/login`
+    const body = {
+      email,
+      password: pass
+    }
+    console.log(url)
+    return this.http.post(url, body).pipe(
       map((resp:any) =>{
-
-        if (resp.email === email && resp.pass === pass) {
-          this._usuario = resp
-          localStorage.setItem('usuario', JSON.stringify(this._usuario))
-          return {
-            ok: true,
-            role: resp.role
-          }
-        }else{
-          return {
-            ok: false,
-            role: undefined
-          }
-        }
-
-        //TODO: todo esto debe venir del back
-        // const respArr = Object.values(resp);
-        // const user:any = respArr.find( ( item:any ) => item.email == email  )
-        // if (user && (user.pass === pass)) {
-        //   //hacer en el back
-        //   this._usuario = {
-        //     id: user.id,
-        //     email: user.email,
-        //     role: user.role
-        //   }
-        //   localStorage.setItem('usuario', JSON.stringify(this._usuario))
-
-        // }
-
+        if (resp.ok) {
+          this._usuario = resp.user
+          localStorage.setItem('usuario', JSON.stringify(resp.user))
+        };
+        return resp
       }),
       catchError(this.handleError)
     )
@@ -132,8 +102,11 @@ _usuario: any = ''
 
   private handleError(error: Response){
     console.warn(error);
-    const msg = `Error status code:${error.status}, status ${error.statusText}`;
-    return throwError(msg);
+    const err = {
+      ok: error.ok,
+      msg: `Error status code:${error.status}, status ${error.statusText}`
+    }
+    return throwError(err);
   }
 
 

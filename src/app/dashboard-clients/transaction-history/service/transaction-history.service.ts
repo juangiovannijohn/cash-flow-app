@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { environment } from "./../../../../environments/environment";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 
 import { concat,Observable, throwError, mergeMap} from "rxjs";
 import { tap, map, catchError } from "rxjs/operators";
@@ -16,16 +16,13 @@ export class TransactionHistoryService {
     private http: HttpClient
   ) { }
 
-getTransactions(user_id:number):Observable<any>{
-  const url = `${this.baseUrl}transactions`
+getTransactions(user_id:string):Observable<any>{
+  const url = `${this.baseUrl}transactions/?id=${user_id}`
   console.log(url);
+  
   return this.http.get(url).pipe(
     map((resp) =>{
-      //TODO: todo esto debe venir del back
-      const respArr = Object.values(resp);
-      const transactions = respArr.filter( ( item:any ) => item.user_id == user_id 
-        );
-      return transactions
+      return resp
     }),
     catchError(this.handleError)
   )

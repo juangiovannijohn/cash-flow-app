@@ -15,7 +15,7 @@ export class TransactionHistoryComponent implements OnInit {
   transactions_user: any[]= []
   categories: any[] = []
   nombre:any = this.Usuario.email
-  id:any = this.Usuario.id
+  id:any = this.Usuario._id
 
     constructor(
       private loginService:LoginService,
@@ -23,24 +23,15 @@ export class TransactionHistoryComponent implements OnInit {
     ) {}
   
     ngOnInit(): void {
-      this.transactions_user = this.Usuario.transaccions
-      this.categories  = this.Usuario.categories_expenses
      this.getTransactions();
     }
     getTransactions(){
-     
-      const hola = this.transactions_user.map(item => {
-        //TODO_ agregar el nombre de la categoria a las transacciones segun su ID
-        console.log({item})
-       
+      this.transactionsService.getTransactions(this.id).subscribe({
+        next: resp =>  {
+          this.transactions= resp.transactions;
+          console.log('servicio historial de transacciones',resp)
+        }
       })
-      
-      // this.transactionsService.getTransactions(this.id).subscribe({
-      //   next: transactions =>  {
-      //     this.transactions= transactions
-      //     console.log(this.transactions)
-      //   }
-      // })
     }
 
 

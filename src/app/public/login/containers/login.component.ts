@@ -10,6 +10,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+get usuario(){
+  return this.loginService.Usuario;
+}
 login: FormGroup;
 loginError:boolean = false;
 
@@ -20,8 +23,8 @@ loginError:boolean = false;
     private router: Router
     ) {
       this.login= this.form.group({
-        email:['juan@juan.com', [Validators.required, Validators.email]],
-        pass:['juan', [Validators.required]],
+        email:['manu@manu.com', [Validators.required, Validators.email]],
+        pass:['manu', [Validators.required]],
       })
     }
 
@@ -41,23 +44,25 @@ loginError:boolean = false;
     this.loginService.login(this.login.value.email,this.login.value.pass ).subscribe({
       next: (resp:any) => {
         if (resp.ok) {
-
           //TODO: mejorar esta navegacion con los guards y el objeto Usuario que vendra del service
-          if(resp.role === 'client') {
+          if(resp.user.role === 'user') {
             this.router.navigate(['/intranet']);
           } 
-          if (resp.role === 'admin') {
+          if (resp.user.role === 'admin') {
               this.router.navigate(['/dashboard-admin']);
           } 
-          if (resp.role === 'public') {
+          if (resp.user.role === 'public') {
             this.router.navigate(['/blog']);
           } 
   
         }else{
-          this.router.navigate(['/login']);
+          this.loginError = true;
         }
       },
-      error: err => console.log(err)
+      error: err => {
+        console.log(err);
+        this.loginError = true;
+      }
     })
   }
 

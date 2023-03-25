@@ -1,9 +1,11 @@
 const { transactionModel, userModel } = require('./../models');
 const getTransactions = async (req, res) => {
-  const { userId } = req.body;
+  const { id } = req.query;
+  console.log({id})
+
   let msg;
   try {
-    const transactions = await transactionModel.find({user: userId });
+    const transactions = await transactionModel.find({user: id });
      //console.log({transactions})
     if (transactions.length != 0) {
       msg = 'Si tiene transacciones'

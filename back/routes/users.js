@@ -2,11 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const { validatorCreateUser } = require('./../validators/users')
-const { getUsers, getUserById, getUserByEmail, createUser, updateUser, changePassUser, deleteUser, renewUser }= require('./../controllers/users')
+const { login, getUsers, getUserById, getUserByEmail, createUser, updateUser, changePassUser, deleteUser, renewUser }= require('./../controllers/users')
 const { getCategories, getCategory, createCategory, updateCategory, deleteCategory} = require('./../controllers/categories')
 //TODO: localhost/users GET, POST, DELETE, UPDATE
 
 //Usuarios
+router.post('/login', login );
 router.get('/',getUsers);
 router.get('/userId', getUserById );
 router.get('/user', getUserByEmail );
