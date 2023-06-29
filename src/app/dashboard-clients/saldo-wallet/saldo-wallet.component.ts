@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginService } from 'src/app/public/login/services/login.service';
+import { TransactionsDetails } from 'src/app/core/models-interface/interfaces';
+import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
+import { CategoryType} from 'src/app/core/models-interface/enums';
+
 
 @Component({
   selector: 'app-saldo-wallet',
@@ -7,18 +10,25 @@ import { LoginService } from 'src/app/public/login/services/login.service';
   styleUrls: ['./saldo-wallet.component.css']
 })
 export class SaldoWalletComponent implements OnInit {
-get Usuario(){
-  return this.loginService.Usuario
-}
-nombre:any = this.Usuario.email
-saldo:any = this.Usuario.id
+  transactions: TransactionsDetails[] | any= []
+  CategoryType : any = CategoryType
+
 
   constructor(
-    private loginService:LoginService
+    private supabase : SupabaseService
   ) { }
 
   ngOnInit(): void {
-    console.log(this.Usuario)
+this.supabase.getTransactions().then(
+  resp => {
+  if (!resp.error) {
+    this.transactions = resp.transactions;
+    console.log(this.transactions)
+    console.log(this.CategoryType.Expense)
+    }else{
+      console.warn(resp.error)
+    }
   }
-
+)
+  }
 }

@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ng-valid:not(form)  {
+    border-left: 3px solid #16a34a; /* green */
+  }
+  
+  .ng-invalid:not(form)  {
+    border-left: 3px solid #dc2626; /* red */
+  }
+  
+  .alert div {
+    background-color: #fed3d3;
+    color: #dc2626;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: .5rem;
+  }
+  
+  select {
+    width: 100%;
+    padding: .5rem;
+  }

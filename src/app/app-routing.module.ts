@@ -3,9 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { Notfound404Component } from './core/shared/components/notfound404/notfound404.component';
 
 const routes: Routes = [
+  // {
+  //   path: '',
+  //   loadChildren: () => import('./public/public.module').then( m => m.PublicModule )
+  // },
   {
     path: '',
-    loadChildren: () => import('./public/public.module').then( m => m.PublicModule )
+    loadChildren: () => import('./dashboard-clients/dashboard-clients.module').then( m => m.DashboardClientsModule )
   },
   {path: '**', component: Notfound404Component } //TODO: 404Component en core/shared/components
 ];

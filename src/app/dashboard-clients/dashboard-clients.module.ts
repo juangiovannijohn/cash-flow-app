@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule , DatePipe } from '@angular/common';
 
 import { SharedModule } from '../core/shared/shared.module';
 import { DashboardClientsRoutingModule } from './dashboard-clients-routing.module';
@@ -8,6 +8,8 @@ import { CashflowComponent } from './cashflow/cashflow.component';
 import { NewTransactionComponent } from './new-transaction/new-transaction.component';
 import { DashboardClientsComponent } from './dashboard-clients.component';
 import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
+import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -16,15 +18,18 @@ import { TransactionHistoryComponent } from './transaction-history/transaction-h
       CashflowComponent,
       NewTransactionComponent,
       DashboardClientsComponent,
-      TransactionHistoryComponent
+      TransactionHistoryComponent,
+      PerfilUsuarioComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
-    DashboardClientsRoutingModule
+    DashboardClientsRoutingModule,
+    ReactiveFormsModule
   ],
   exports:[],
-  providers: []
+  providers: [
+    DatePipe,]
 })
 export class DashboardClientsModule { 
   constructor(){

@@ -9,13 +9,13 @@ import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    Notfound404Component
+    Notfound404Component,
   ],
   imports: [
     CommonModule,
     SharedRoutingModule,
     HttpClientModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
     HttpClientModule,

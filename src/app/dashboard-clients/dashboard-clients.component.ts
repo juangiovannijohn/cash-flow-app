@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-clients',
@@ -6,10 +7,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard-clients.component.css']
 })
 export class DashboardClientsComponent implements OnInit {
+  open = false;
 
-  constructor() { }
+
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.router.navigate(['movimientos'], { relativeTo: this.route });
+  }
+  toggleMenu() {
+    this.open = !this.open;
   }
 
 }

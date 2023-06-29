@@ -1,31 +1,98 @@
-<div>
-    <h2>Nuevo registro</h2>
-    <form action="">
-        <label for="">Fecha</label>
-        <input type="date">
-        <hr>
-        <label for="">Detalle</label>
-        <input type="text">
-        <hr>
-        <label for="">Categoria</label>
-        <select name="" id="">
-            <option value="">Comida</option>
-            <option value="">Otros Gastos</option>
-            <option value="">Placeres</option>
-            <option value="">Tarjeta Santander</option>
-            <option value="">Tarjeta BBVA</option>
-            <option value="">Obra Social/Prepaga</option>
-            <option value="">Brubank</option>
-            <option value="">Inversiones/Ahorros</option>
-            <option value="">iCornio</option>
-            <option value="">PIL</option>
-            <option value="">Sueldo</option>
-            <option value="">Otros Ingresos</option>
-        </select>
-        <hr>
-        <label for="">Monto</label>
-        <input type="number">
-        <hr>
-        <input type="submit" value="Cargar">
+<div class="grid grid-cols-1 sm:grid-cols-2 p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20 gap-8 sm:gap-10">
+  <div class="grid grid-cols-1">
+    
+    <!-- NUEVO GASTO -->
+    <h2 class="text-lg text-start font-semibold text-accent mb-2">Nuevo Gasto</h2>
+    <form class="grid grid-cols-1" [formGroup]="expensesForm" (ngSubmit)="submitExpenseForm()">
+      <label class="text-text font-medium mb-1" for="monto">Monto</label>
+      <input class="px-2 py-3 bg-gris text-text" type="number" id="monto" formControlName="monto" min="0"
+        placeholder="1000" />
+      <div *ngIf="
+          expensesForm.get('monto')?.invalid && expensesForm.get('monto')?.touched
+        " class="text-red">
+        Monto es requerido.
+      </div>
+      <label class="text-text font-medium mb-1" for="detalle">Detalle</label>
+      <input class="px-2 py-3 bg-gris text-text" type="text" id="detalle" formControlName="detalle"
+        placeholder="Pastas en despensa de la esquina" />
+      <div *ngIf="
+          expensesForm.get('detalle')?.invalid && expensesForm.get('detalle')?.touched
+        " class="text-red">
+        {{ expensesForm.get('detalle')?.errors?.['sqlInjection'].message }}
+      </div>
+      <label class="text-text font-medium mb-1" for="categoria">Categoría</label>
+      <select class="px-2 py-3 bg-gris text-text" id="categoria" formControlName="categoria">
+        <option [value]="null">Seleccione</option>
+        <ng-container *ngFor="let category of expensesCategories">
+          <option [value]="category.id">{{category.category_name | uppercase}}</option>
+        </ng-container>
+      </select>
+      <div *ngIf="
+          expensesForm.get('categoria')?.invalid &&
+          expensesForm.get('categoria')?.touched
+        " class="text-red">
+        La categoría es requerida.
+      </div>
+      <label class="text-text font-medium mb-1" for="fecha">Fecha</label>
+      <input class="px-2 py-3 bg-gris text-text" type="date" id="fecha" formControlName="fecha" />
+      <div *ngIf="
+          expensesForm.get('fecha')?.invalid && expensesForm.get('fecha')?.touched
+        " class="text-red">
+        La fecha es requerida.
+      </div>
+      <input [ngClass]="{ 'opacity-60': !expensesForm.valid }" [disabled]="!expensesForm.valid" type="submit"
+        class="p-4 bg-primary text-text font-semibold text-lg my-3" value="Cargar" />
     </form>
+    <div *ngIf="showMsg && expensesTrue"  class=" bg-gris py-3 w-full">
+      <p  [ngClass]="msgSuccess ? 'text-accent' : 'text-red'" class="text-center"> {{msgText}}</p>
+    </div>
+  </div>
+
+  <!-- NUEVO INGRESO -->
+  <div class="grid grid-cols-1">
+    <h2 class="text-lg text-start font-semibold text-accent mb-2">
+      Nuevo Ingreso
+    </h2>
+    <form class="grid grid-cols-1" [formGroup]="incomeForm" (ngSubmit)="submitIncomeForm()">
+      <label class="text-text font-medium mb-1" for="fecha">Fecha</label>
+      <input class="px-2 py-3 bg-gris text-text" type="date" id="fecha" formControlName="fecha" />
+      <div *ngIf="
+          incomeForm.get('fecha')?.invalid && incomeForm.get('fecha')?.touched
+        " class="text-red">
+        La fecha es requerida.
+      </div>
+      <label class="text-text font-medium mb-1" for="detalle">Detalle</label>
+      <input class="px-2 py-3 bg-gris text-text" type="text" id="detalle" formControlName="detalle" placeholder="Sueldo" />
+      <div *ngIf="
+          incomeForm.get('detalle')?.invalid && incomeForm.get('detalle')?.touched
+        " class="text-red">
+        {{ incomeForm.get('detalle')?.errors?.['sqlInjection'].message }}
+      </div>
+      <label class="text-text font-medium mb-1" for="categoria">Categoría</label>
+      <select class="px-2 py-3 bg-gris text-text" id="categoria" formControlName="categoria">
+        <option [value]="null">Seleccione</option>
+        <ng-container *ngFor="let category of incomeCategories">
+          <option [value]="category.id">{{category.category_name | uppercase}}</option>
+        </ng-container>
+      </select>
+      <div *ngIf="
+          incomeForm.get('categoria')?.invalid &&
+          incomeForm.get('categoria')?.touched
+        " class="text-red">
+        La categoría es requerida.
+      </div>
+      <label class="text-text font-medium mb-1" for="monto">Monto</label>
+      <input class="px-2 py-3 bg-gris text-text" type="number" id="monto" formControlName="monto"  min="0"
+      placeholder="100000"/>
+      <div *ngIf="
+          incomeForm.get('monto')?.invalid && incomeForm.get('monto')?.touched
+        " class="text-red">
+        Monto es requerida.
+      </div>
+      <input [ngClass]="{ 'opacity-60': !incomeForm.valid }" [disabled]="!incomeForm.valid" type="submit" class="p-4 bg-primary text-text font-semibold text-lg my-3" value="Cargar" />
+    </form>
+    <div *ngIf="showMsg && !expensesTrue"  class=" bg-gris py-3 w-full">
+      <p  [ngClass]="msgSuccess ? 'text-accent' : 'text-red'" class="text-center"> {{msgText}}</p>
+    </div>
+  </div>
 </div>
