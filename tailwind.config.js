@@ -5,11 +5,14 @@ module.exports = {
     transparent: 'transparent',
     current: 'currentColor',
     'text': '#ffffff',
-    'accent': '#00c853',
+    'accent': '#4cc38a',
     'primary': '#006600',
-    'backg': '#1F1F1F',
-    'gris': '#2e2e2e',
-    'red': '#dc2626'
+    'backg': '#1c1c1c',
+    'gris': '#232323',
+    'red': '#dc2626',
+    'warning': '#d97706',
+    'green-oscuro': '#0c1f17',
+    'green-claro': '#40bf86'
   },
     extend: {},
   },

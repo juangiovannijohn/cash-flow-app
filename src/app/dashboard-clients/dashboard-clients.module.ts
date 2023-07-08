@@ -9,7 +9,9 @@ import { NewTransactionComponent } from './new-transaction/new-transaction.compo
 import { DashboardClientsComponent } from './dashboard-clients.component';
 import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ArsPipe } from '../core/models-interface/ars.pipe';
+
 
 
 @NgModule({
@@ -19,13 +21,15 @@ import { ReactiveFormsModule } from '@angular/forms';
       NewTransactionComponent,
       DashboardClientsComponent,
       TransactionHistoryComponent,
-      PerfilUsuarioComponent
+      PerfilUsuarioComponent,
+      ArsPipe
   ],
   imports: [
     CommonModule,
     SharedModule,
     DashboardClientsRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   exports:[],
   providers: [

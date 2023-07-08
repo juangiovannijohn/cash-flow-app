@@ -13,7 +13,7 @@ export class DashboardClientsComponent implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.router.navigate(['movimientos'], { relativeTo: this.route });
+    this.router.navigate(['perfil'], { relativeTo: this.route });
   }
   toggleMenu() {
     this.open = !this.open;

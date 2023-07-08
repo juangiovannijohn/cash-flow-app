@@ -48,7 +48,7 @@ export class NewTransactionComponent implements OnInit {
     this.supabase.getCategoriesExpenses(this.user_uuid)
       .then(resp => {
         console.log(resp);
-        this.expensesCategories = resp.category_expense;
+        this.expensesCategories = resp.category_expense_view;
       })
       .catch(err => console.log(err));
 

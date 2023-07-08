@@ -1,10 +1,10 @@
 <div class="text-text w-full h-screen p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
-  <h2 class="text-lg text-start font-semibold text-accent mb-2">Movimientos</h2>
+  <h2 class="text-lg text-start font-semibold text-accent mb-2">Balance mensual</h2>
 
-<div class="grid grid-cols-1 gap-1">
-  <ng-container *ngFor="let tr of transactions">
+<!-- <div class="grid grid-cols-1 gap-1">
+  <ng-container *ngFor="let tr of transactions"> -->
     <!-- CARD -->
-    <div class=" bg-gris w-full p-1 rounded-md grid grid-cols-6 ">
+    <!-- <div class=" bg-gris w-full p-1 rounded-md grid grid-cols-6 ">
       <div class="col-span-1 flex flex-col justify-center">
         <p class="text-xs text-center tracking-widest">JUL</p>
         <p class="text-2xl text-center leading-none ">21</p>
@@ -18,54 +18,27 @@
       </div>
     </div>
   </ng-container>
-</div>
-  <!-- <table class="w-full">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Categoría</th>
-            <th>Detalle</th>
-            <th>Monto</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <input class=" w-full h-full px-2 py-3 bg-gris text-text" type="date" id="fecha" formControlName="fecha" />
-            </td>
-            <td>
-              <select class=" w-full h-full px-2 py-3 bg-gris text-text" id="categoria" formControlName="categoria">
-              <option [value]="null" disabled>Seleccione</option>
-              <option [value]="null">cat 1</option>
-              <option [value]="null">cat 2</option>
-              <option [value]="null">cat 3</option>
-              <ng-container *ngFor="let category of expensesCategories">
-                <option [value]="category.id">{{category.category_name | uppercase}}
-                  
-                </option>
-              </ng-container>
-            </select></td>
-            <td>
-              <input class=" w-full h-full px-2 py-3 bg-gris text-text" type="text" id="detalle" formControlName="detalle"
-              placeholder="Pastas en despensa de la esquina" />
-            </td>
-            <td>
-              <input class="w-full  h-full px-2 py-3 bg-gris text-text" type="number" id="monto" formControlName="monto" min="0"
-              placeholder="1000" />
-            </td>
-            <td>
-              <ul  class="bg-gris px-2 h-full w-full  text-text">
-                <li>
-                  <button> editar</button>
-                </li>
-                <li>
-                  <button> Borrar</button>
-                </li>
-              </ul>
-            </td>
-          </tr>
+</div> -->
 
-        </tbody>
-      </table> -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-3">
+  <ng-container *ngFor="let budget of budgets">
+    <!-- CARD -->
+    <div class=" bg-gris w-full p-2 rounded-md grid grid-cols-1 ">
+      <div class="col-span-1 flex flex-col justify-center gap-0 mb-3">
+        <p class="text-xs text-start tracking-wider uppercase">{{budget.bugget_date | date:'MMM yyyy'}}</p>
+        <p class=" text-accent font-medium text-sm uppercase tracking-wider">{{ budget.category_name }} <span class="text-text opacity-50 font-thin text-xs">({{budget.budget_expected | ARS}})</span></p>
+      </div>
+      <div class="col-span-1 flex flex-row justify-between">
+        <p class="text-text opacity-50 font-thin text-xs leading-6">Gastado</p>
+        <p [ngClass]="budget.class" class="text-center  font-medium text-base leading-none"> {{budget.budget_sum | ARS}} </p>
+        <!-- <p [ngClass]="tr.transaction_type == CategoryType.Expense ? 'text-red' : 'text-accent'" class=" text-center  font-medium text-lg leading-none">{{ tr.amount }}</p> -->
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="my-3">
+  <button class="bg-primary text-text py-1 px-3 rounded-md hover:bg-accent hover:shadow-md">
+    Editar Presupuesto
+  </button>
+</div>
 </div>
