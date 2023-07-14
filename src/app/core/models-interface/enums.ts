@@ -5,7 +5,8 @@ export enum CategoryType {
 
   export enum BudgetPercentage {
     Warning = 75,
-    Danger = 90
+    Danger = 90,
+    Over = 100
   }
 
   export enum BudgetAlertClass {

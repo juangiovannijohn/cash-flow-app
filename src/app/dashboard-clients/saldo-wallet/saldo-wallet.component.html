@@ -1,44 +1,117 @@
-<div class="text-text w-full h-screen p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
-  <h2 class="text-lg text-start font-semibold text-accent mb-2">Balance mensual</h2>
-
-<!-- <div class="grid grid-cols-1 gap-1">
-  <ng-container *ngFor="let tr of transactions"> -->
-    <!-- CARD -->
-    <!-- <div class=" bg-gris w-full p-1 rounded-md grid grid-cols-6 ">
-      <div class="col-span-1 flex flex-col justify-center">
-        <p class="text-xs text-center tracking-widest">JUL</p>
-        <p class="text-2xl text-center leading-none ">21</p>
-      </div>
-      <div class="col-span-4 flex flex-col justify-between">
-        <p class=" text-accent font-medium text-xs uppercase tracking-wider">{{ tr.transaction_category }}</p>
-        <p class="text-xs leading-6">{{ tr.transaction_description }}</p>
-      </div>
-      <div class="col-span-1 flex items-center justify-end pr-1">
-        <p [ngClass]="tr.transaction_type == CategoryType.Expense ? 'text-red' : 'text-accent'" class=" text-center  font-medium text-lg leading-none">{{ tr.amount }}</p>
-      </div>
+<div class="text-text w-full  p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
+  <div class="w-full">
+    <h2 class="text-lg text-start font-semibold text-accent mb-2">Balance mensual</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-3">
+      <ng-container *ngFor="let budget of budgets">
+        <!-- CARD -->
+        <div [ngClass]="budget.over? 'bg-red': 'bg-gris'" class=" w-full p-2 rounded-md grid grid-cols-1 ">
+          <div class="col-span-1 flex flex-col justify-center gap-0 mb-3">
+            <p class="text-xs text-start tracking-wider uppercase">{{budget.bugget_date | date:'MMM yyyy'}}</p>
+            <p class=" text-accent font-medium text-sm uppercase tracking-wider">{{ budget.category_name }} <span
+                class="text-text opacity-50 font-thin text-xs">({{budget.budget_expected | ARS}})</span></p>
+          </div>
+          <div *ngIf="budget.over" class="col-span-1 flex flex-row justify-between">
+            <p class="text-text uppercase text-base">excedido</p>
+            <p class="text-center text-text  font-medium text-base opacity-70"> {{budget.budget_sum |
+              ARS}} </p>
+          </div>
+          <div *ngIf="!budget.over" class="col-span-1 flex flex-row justify-between">
+            <p class="text-text opacity-50 font-thin text-xs leading-6">Gastado</p>
+            <p [ngClass]="budget.class" class="text-center font-medium text-base leading-none"> {{budget.budget_sum |
+              ARS}} </p>
+          </div>
+        </div>
+      </ng-container>
     </div>
-  </ng-container>
-</div> -->
-
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-3">
-  <ng-container *ngFor="let budget of budgets">
-    <!-- CARD -->
-    <div class=" bg-gris w-full p-2 rounded-md grid grid-cols-1 ">
-      <div class="col-span-1 flex flex-col justify-center gap-0 mb-3">
-        <p class="text-xs text-start tracking-wider uppercase">{{budget.bugget_date | date:'MMM yyyy'}}</p>
-        <p class=" text-accent font-medium text-sm uppercase tracking-wider">{{ budget.category_name }} <span class="text-text opacity-50 font-thin text-xs">({{budget.budget_expected | ARS}})</span></p>
-      </div>
-      <div class="col-span-1 flex flex-row justify-between">
-        <p class="text-text opacity-50 font-thin text-xs leading-6">Gastado</p>
-        <p [ngClass]="budget.class" class="text-center  font-medium text-base leading-none"> {{budget.budget_sum | ARS}} </p>
-        <!-- <p [ngClass]="tr.transaction_type == CategoryType.Expense ? 'text-red' : 'text-accent'" class=" text-center  font-medium text-lg leading-none">{{ tr.amount }}</p> -->
-      </div>
+    <div class="my-3">
+      <button routerLink="/intranet/perfil" fragment="categorias_personalizadas"
+        class="bg-primary text-text py-1 px-3 rounded-md hover:bg-accent hover:shadow-md">
+        Editar Presupuesto
+      </button>
     </div>
-  </ng-container>
-</div>
-<div class="my-3">
-  <button class="bg-primary text-text py-1 px-3 rounded-md hover:bg-accent hover:shadow-md">
-    Editar Presupuesto
-  </button>
-</div>
+  </div>
+  <div class="w-full">
+    <h2 class="text-lg text-start font-semibold text-accent mb-2">Historial</h2>
+    <div class="grid grid-cols-1">
+      <ng-container *ngFor="let tr of transactionsHistory">
+        <!-- CARD -->
+        <div class="hover:bg-opacity-50 w-full grid grid-cols-6 bg-gris p-2">
+          <div [ngClass]="tr.showFormEdit? 'opacity-25' : 'opacity-100'" class="col-span-1 flex flex-col justify-center gap-2">
+            <p class="text-xl text-center tracking-wider uppercase  leading-none">{{tr.date | date:'dd'}}</p>
+            <p class="text-sm text-center tracking-wider uppercase leading-none">{{tr.date | date:'MMM'}}</p>
+          </div>
+          <div [ngClass]="tr.showFormEdit? 'opacity-25' : 'opacity-100'" (click)="tr.showFormEdit = !tr.showFormEdit; openFormEditTransaction(tr.category_id)"
+            class="col-span-3 sm:col-span-4  flex flex-col justify-center gap-2">
+            <p  [ngClass]=" tr.category_name ? 'text-accent' : 'text-red'" class=" font-medium text-sm uppercase tracking-wider">{{ tr.category_name ? tr.category_name : 'sin categoría'  }}
+            </p>
+            <p class="text-start text-text text-xs opacity-80"> {{tr.description}} </p>
+          </div>
+          <div [ngClass]="tr.showFormEdit? 'opacity-25' : 'opacity-100'" class="col-span-2 sm:col-span-1 flex items-center justify-end sm:justify-center">
+            <p [ngClass]="tr.typeExpense ? 'bg-red text-text text-opacity-60 border-text border-opacity-60' : 'bg-green-oscuro text-accent text-opacity-100 border-accent'"
+              class="block  rounded bg-opacity-70 border px-2 py-1 text-center font-medium text-base leading-none">
+              {{tr.amount | ARS}} </p>
+          </div>
+        </div>
+        <!-- Form edit transaction -->
+        <div [ngClass]="{ 'hidden': !tr.showFormEdit }" class="grid grid-cols-1 bg-gris px-3">
+          <!-- Form -->
+          <div class="grid grid-cols-1 ">
+            <div class="mb-1 grid grid-cols-4">
+              <label class=" text-sm" for="budget_amount">Monto</label>
+              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3" type="number"
+                id="budget_amount" [(ngModel)]="tr.amount" />
+            </div>
+            <div class="mb-1 grid grid-cols-4">
+              <!-- Categoria de gastos -->
+              <label class=" text-sm col-span-1">Categoría</label>
+              <select  *ngIf="tr.typeExpense" class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3"
+                [(ngModel)]="selectedCategoryId">
+                <option class="uppercase" [ngValue]="tr.category_id" selected>{{tr.category_name}}</option>
+                <ng-container *ngFor="let cat of expensesCategories">
+                  <option class="uppercase" [ngValue]="cat.id">{{cat.category_name | uppercase}}</option>
+                </ng-container>
+              </select>
+              <!-- Categoria de ingresos -->
+              <select  *ngIf="!tr.typeExpense" class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3"
+                [(ngModel)]="selectedCategoryId">
+                <option class="uppercase" [ngValue]="tr.category_id"  selected>{{tr.category_name}}</option>
+                <ng-container *ngFor="let cat of incomeCategories">
+                  <option class="uppercase" [ngValue]="cat.id">{{cat.category_name | uppercase}}</option>
+                </ng-container>
+              </select>
+            </div>
+            <div class="mb-1 grid grid-cols-4">
+              <label class=" text-sm col-span-1" for="">Descripción</label>
+              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="text"
+                [(ngModel)]="tr.description">
+            </div>
+            <div class="mb-1 grid grid-cols-4">
+              <label class=" text-sm col-span-1" for="">Fecha</label>
+              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="date"
+                [(ngModel)]="tr.date">
+            </div>
+          </div>
+          
+          <!-- Buttons -->
+            <div class="my-2 flex flex-row justify-between">
+              <button class="bg-primary py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+                (click)="updateTransaction(tr.typeExpense, tr.id, selectedCategoryId, tr.description, tr.amount, tr.date  )">
+                Actualizar</button>
+              <button class="text-red py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+                (click)="openModal()">
+                Borrar
+              </button>
+                <app-confirm-delete-category
+                [message]="'¿Seguro desea eliminar la transacción?'" (confirmed)="deleteTransaction(tr.id, tr.typeExpense)" (cancelled)="closeModal()"
+                *ngIf="showModal">
+                </app-confirm-delete-category>
+                <app-alert-message-modal [message]="
+                'Error al eliminar el movimiento.'
+                " (close)="closeAlert()" *ngIf="showAlert">
+                </app-alert-message-modal>
+            </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
 </div>

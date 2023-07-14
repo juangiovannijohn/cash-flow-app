@@ -8,6 +8,7 @@ import { LoginComponent } from './login/containers/login.component';
 import { BlogComponent } from './blog/containers/blog.component';
 import { SharedModule } from '../core/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ConfirmationUserComponent } from './confirmation-user/confirmation-user.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     HomeComponent,
     PublicComponent,
     LoginComponent,
-    BlogComponent
+    BlogComponent,
+    ConfirmationUserComponent
   ],
   imports: [
     CommonModule,

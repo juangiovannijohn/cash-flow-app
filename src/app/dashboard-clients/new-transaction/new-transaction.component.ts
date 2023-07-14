@@ -5,7 +5,9 @@ import { FormGroup, FormBuilder, Validators, FormControl, AbstractControl, Valid
 import { sqlInjectionValidator } from 'src/app/core/helpers/sqlInjectionValidator';
 
 import { DatePipe } from '@angular/common';
-import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
+import { Profile, SupabaseService } from 'src/app/core/shared/services/supabase.service';
+import { AuthSession } from '@supabase/supabase-js';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-transaction',
@@ -13,7 +15,9 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
   styleUrls: ['./new-transaction.component.css']
 })
 export class NewTransactionComponent implements OnInit {
-  user_uuid: string = '8085f1c3-464a-4a01-8878-555277c367e0'
+  session: AuthSession | any = this.supabase.session ? this.supabase.session : null
+  userRole:string = '';
+  profile!: Profile | any;
   expensesForm: FormGroup;
   incomeForm: FormGroup;
   expensesCategories: any[] | null = []
@@ -26,7 +30,7 @@ export class NewTransactionComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private datePipe: DatePipe,
-    private supabase: SupabaseService) {
+    private supabase: SupabaseService,private router: Router, private route: ActivatedRoute) {
     const fechaFormateada = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
 
     this.expensesForm = this.formBuilder.group({
@@ -44,21 +48,49 @@ export class NewTransactionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getProfile();
 
-    this.supabase.getCategoriesExpenses(this.user_uuid)
-      .then(resp => {
-        console.log(resp);
-        this.expensesCategories = resp.category_expense_view;
-      })
-      .catch(err => console.log(err));
-
-    this.supabase.getCategoriesIncome(this.user_uuid)
-      .then(resp => {
-        console.log(resp);
-        this.incomeCategories = resp.category_income;
-      })
-      .catch(err => console.log(err));
   }
+  async getProfile() {
+    try {
+      const { user } = this.session
+      let { data: profile, error, status } = await this.supabase.profile(user)
+      if (error && status !== 406) {
+        throw error
+      }
+      if (profile) {
+        if (profile['role'] != 'user') {
+          console.log('se cerro sesion')
+          this.supabase.signOut();
+          this.router.navigate(['login']);
+          return
+        }
+        this.userRole = profile['role'] ? profile['role'] : '';
+        this.profile = profile;
+        this.getCategories(this.profile.id);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      }
+    }
+  }
+
+  getCategories(user_uuid:string){
+      this.supabase.getCategoriesExpenses(user_uuid)
+        .then(resp => {
+          this.expensesCategories = resp.category_expense_view;
+        })
+        .catch(err => console.log(err));
+
+      this.supabase.getCategoriesIncome(user_uuid)
+        .then(resp => {
+          this.incomeCategories = resp.category_income;
+        })
+        .catch(err => console.log(err));
+  }
+
+
   submitExpenseForm() {
 
     if (this.expensesForm.valid) {
@@ -68,7 +100,7 @@ export class NewTransactionComponent implements OnInit {
         description_expense: this.expensesForm.value.detalle,
         category_expense_id: this.expensesForm.value.categoria,
         expense_amount: this.expensesForm.value.monto,
-        user_uuid: this.user_uuid
+        user_uuid: this.profile.id
       }
       console.log({ formData });
 
@@ -79,7 +111,6 @@ export class NewTransactionComponent implements OnInit {
             console.warn(resp.error)
             this.showAlert(true,true, false, 'Error al guardar el gasto, intente nuevamente', 3000);
           } else {
-            console.log(resp)
             this.showAlert(true,true, true, 'Nuevo gasto guardado', 3000);           
           }
         })
@@ -98,10 +129,6 @@ export class NewTransactionComponent implements OnInit {
 
     } else {
       this.showAlert(true,true, false, 'Formulario inválido', 3000);
-      console.log(this.expensesForm.controls['fecha'].errors);
-      console.log(this.expensesForm.controls['detalle'].errors);
-      console.log(this.expensesForm.controls['categoria'].errors);
-      console.log(this.expensesForm.controls['monto'].errors);
     }
   }
   submitIncomeForm() {
@@ -112,7 +139,7 @@ export class NewTransactionComponent implements OnInit {
         description_income: this.incomeForm.value.detalle,
         category_income_id: this.incomeForm.value.categoria,
         income_amount: this.incomeForm.value.monto,
-        user_uuid: this.user_uuid
+        user_uuid: this.profile.id
       }
       console.log({ formData });
 
@@ -123,7 +150,6 @@ export class NewTransactionComponent implements OnInit {
           console.warn(resp.error)
           this.showAlert(false,true, false, 'Error al guardar el ingreso, intente nuevamente', 3000);
         } else {
-          console.log(resp)
           this.showAlert(false,true, true, 'Nuevo ingreso guardado', 3000);           
         }
       })
@@ -131,7 +157,6 @@ export class NewTransactionComponent implements OnInit {
         console.warn(err)
         this.showAlert(false, true, false, 'Error al guardar el ingreso, intente nuevamente', 3000);
       });
-      // Restablecer los valores y el estado del formulario
       // Restablecer los valores y el estado del formulario
       this.incomeForm.patchValue({
         fecha: this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
@@ -142,10 +167,6 @@ export class NewTransactionComponent implements OnInit {
       
     } else {      
       this.showAlert(false,true, false, 'Formulario inválido', 3000);
-      console.log(this.incomeForm.controls['fecha'].errors);
-      console.log(this.incomeForm.controls['detalle'].errors);
-      console.log(this.incomeForm.controls['categoria'].errors);
-      console.log(this.incomeForm.controls['monto'].errors);
     }
   }
 

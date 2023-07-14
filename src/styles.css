@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 .ng-valid:not(form)  {
-    border-left: 3px solid #16a34a; /* green */
+    border-left: 3px solid #16a34a; 
   }
   
   .ng-invalid:not(form)  {
-    border-left: 3px solid #dc2626; /* red */
+    border-left: 3px solid #dc2626; 
   }
   
   .alert div {
@@ -30,3 +30,4 @@
     width: 100%;
     padding: .5rem;
   }
+   

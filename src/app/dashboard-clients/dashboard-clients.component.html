@@ -1,43 +1,88 @@
-<div class="grid grid-cols-1 md:grid-cols-6  ">
-    <div class="bg-gris md:col-span-1 text-text md:min-h-screen">
-        <nav class="">
-            <div class="max-w-7xl">
-                
-                <div class="grid grid-cols-2 px-2 py-4 sm:px-0 sm:py-4  sm:grid-cols-1">
-                    <!-- Logo o título del navbar -->
-                    <div class="grid-span-1 flex justify-self-stretch sm:pl-4">
-                        <a routerLink="/" class="w-full text-white font-bold text-lg">CashFlow App</a>
-                    </div>
-                    <!-- Menú principal Desktop -->
-                    <div class="hidden sm:block sm:pt-6 sm:pb-0 sm:bg-gris w-full">
-                        <ul class="grid grid-cols-1 gap-2">
-                            <li class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1"><a routerLink="perfil" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class="block text-white hover:text-gray-300">Perfil</a></li>
-                            <li class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1"><a routerLink="balance" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class="block text-white hover:text-gray-300">Balance</a></li>
-                            <li class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1"><a routerLink="movimientos" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class="block text-white hover:text-gray-300">Movimientos</a></li>
-                        </ul>
-                    </div>
-                    <!-- Botón de menú mobile -->
-                    <div class="grid-span-1 flex justify-end align-middle sm:hidden ">
+<div class="flex bg-backg flex-col md:flex-row min-h-screen pb-16 md:pb-0">
+    <div class="bg-gris hidden md:block md:max-w-[180px] w-full text-text">
+        <div class=" px-2 py-4 md::px-0 md:py-4  ">
+            <!-- Logo o título del navbar -->
+            <div class="flex flex-col sm:pl-4">
+                <a routerLink="/" class="w-full text-white font-bold text-lg mb-2">CashFlow App</a>
+
+                <!-- TODO -->
+                <!-- <h2 class="text-[10px] font-medium uppercase text-accent">{{profile?.full_name ? profile.full_name :
+                    session.user.email }}</h2> -->
+            </div>
+            <!-- Menú principal Desktop -->
+            <div class="hidden md:block md:pt-6 md:pb-0 bg-gris w-full">
+
+                    <ul class="grid grid-cols-1 gap-2">
+                        <li
+                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
+                            <a routerLink="perfil" [routerLinkActive]="['text-accent', 'font-semibold']"
+                                [routerLinkActiveOptions]="{exact: true}"
+                                class="block text-white hover:text-gray-300">Perfil</a></li>
+                        <li
+                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
+                            <a routerLink="balance" [routerLinkActive]="['text-accent', 'font-semibold']"
+                                [routerLinkActiveOptions]="{exact: true}"
+                                class="block text-white hover:text-gray-300">Balance</a></li>
+                        <li
+                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
+                            <a routerLink="movimientos" [routerLinkActive]="['text-accent', 'font-semibold']"
+                                [routerLinkActiveOptions]="{exact: true}"
+                                class="block text-white hover:text-gray-300">Movimientos</a></li>
+                        <li>
+                            <button
+                                class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-4 px-3 py-1 rounded"
+                                (click)="cerrarSesion()">Cerrar sesión</button>
+                        </li>
+                    </ul>
+
+
+            </div>
+            <!-- Botón de menú mobile -->
+            <!-- <div class="grid-span-1 flex justify-end align-middle sm:hidden ">
                         <button type="button"
                             class=" border-x border-y border-x-accent border-y-accent px-4 rounded-md text-accent"
                             aria-label="Toggle menu" (click)="toggleMenu()">
                             Menu
                         </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Menú mobile desplegable -->
-            <div class="sm:hidden" *ngIf="open">
+                    </div> -->
+        </div>
+        <!-- Menú mobile desplegable -->
+
+        <!-- <div class="sm:hidden" *ngIf="open">
                 <ul class="bg-gris pb-5">
                     <li ><a routerLink="perfil" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Perfil</a></li>
                     <li ><a  routerLink="balance" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Balance</a></li>
                     <li ><a  routerLink="movimientos" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Movimientos</a></li>
+                    <li>
+                        <button class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-4 px-3 py-1 rounded" (click)="cerrarSesion()">Cerrar sesión</button>
+                    </li>
                 </ul>
-            </div>
-        </nav>
+            </div>  -->
     </div>
-
-    <div class="bg-backg md:col-span-5 min-h-screen">
+    <div class="  w-full">
         <router-outlet></router-outlet>
+    </div>
+    <div class="bg-backg md:hidden fixed bottom-[-2px] w-full shadow-[0_0px_10px_0_rgba(0,0,0,0.1)] shadow-gris">
+        <div class="py-3  w-full grid grid-cols-4">
+            <a routerLink="perfil" routerLinkActive #rlaPerfil="routerLinkActive"
+                [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
+                <img class="" width="20px" height="auto" src="../../assets/img/user.png" alt="">
+                <span [ngClass]="rlaPerfil.isActive ? '' : 'hidden'" class=" text-xs text-text">Perfil</span>
+            </a>
+            <a routerLink="balance" routerLinkActive #rlaBalance="routerLinkActive"
+                [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
+                <img class="" width="20px" height="auto" src="../../assets/img/balance.png" alt="">
+                <span [ngClass]="rlaBalance.isActive ? '' : 'hidden'" class=" text-xs text-text">Balance</span>
+            </a>
+            <a routerLink="movimientos" routerLinkActive #rlaMovimientos="routerLinkActive"
+                [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
+                <img class="" width="20px" height="auto" src="../../assets/img/add.png" alt="">
+                <span [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'"
+                    class=" text-xs text-accent">Movimientos</span>
+            </a>
+            <button class="flex flex-col items-center justify-start" (click)="cerrarSesion()"><img class="" width="25px"
+                    height="auto" src="../../assets/img/signout-1.png" alt=""></button>
+        </div>
+    
     </div>
 </div>

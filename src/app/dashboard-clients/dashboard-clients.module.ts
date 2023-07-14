@@ -11,6 +11,7 @@ import { TransactionHistoryComponent } from './transaction-history/transaction-h
 import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ArsPipe } from '../core/models-interface/ars.pipe';
+import { ConfirmDeleteCategoryComponent } from '../core/shared/components/confirm-delete-category/confirm-delete-category.component';
 
 
 

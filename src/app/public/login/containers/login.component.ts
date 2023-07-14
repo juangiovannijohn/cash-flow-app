@@ -12,6 +12,7 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 })
 export class LoginComponent  {
   loading = false
+  showEmail= false
 
   signInForm = this.formBuilder.group({
     email: '',
@@ -28,7 +29,10 @@ export class LoginComponent  {
       const email = this.signInForm.value.email as string
       const { error } = await this.supabase.signIn(email)
       if (error) throw error
-      alert('Check your email for the login link!')
+      this.showEmail = true;
+      setTimeout(() => {
+        this.showEmail = false
+      }, 4000)
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message)

@@ -9,3 +9,15 @@ export interface TransactionsDetails {
     transaction_type: string; 
     user_uuid: string;
   }
+
+  export interface TransactionHistory {
+    id:            number;
+    category_id:   number;
+    category_name: null | string;
+    description:   string;
+    date:          Date;
+    amount:        number;
+    user_uuid:     string;
+    typeExpense:   boolean;
+    showFormEdit:  boolean;
+}

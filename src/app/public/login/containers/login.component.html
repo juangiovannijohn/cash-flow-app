@@ -1,38 +1,30 @@
-<div class="grid min-h-screen place-content-center">
-    <div class="bg-slate-50 p-8">
-        <h2 class="text-2xl	 text-amber-400">Login</h2>
-        <form autocomplete="off" class="grid grid-cols-1" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-          <div>
-            <label for="email" class="m-4" for="">Email</label>
-            <!-- <input [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' " required name="email" class="m-4" type="email"  formControlName="email"> -->
-            <input
-            id="email"
-            formControlName="email"
-            class="inputField"
-            type="email"
-            placeholder="Your email"
-          />
-        </div>
-        <div>
-          <button type="submit" class="button block" [disabled]="loading">
-            {{ loading ? 'Loading' : 'Send magic link' }}
-          </button>
-        </div>
-            <!-- <div  class="alert">
-                <div [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' " class="" *ngIf="campoNoValido('email')">
-                    Ingrese un email valido
-                </div>
-            </div> -->
-            
-            <!-- <label for="pass" class="m-4" for="">Pass</label>
-            <input name="pass" class="m-4" type="password"  formControlName="pass">
-            <span class="text-muted" *ngIf="campoNoValido('pass')">Password es requerido</span> -->
-            <!-- <input [disabled]="!login.valid"  [ngClass]="campoNoValido('email')? 'ng-invalid' : 'ng-valid' "  class="m-4 bg-slate-200" type="submit" value="Ingresar"> -->
-        </form>
-        <!-- <div *ngIf="loginError">
-          <div class="ng-invalid">
-            Usuario o Password incorrectos
+<div class="bg-backg min-h-screen w-full">
+  <div *ngIf="showEmail"
+    class="w-full fixed top-0 h-16 flex justify-center items-center bg-primary rounded text-text font-medium text-center text-lg p-6">
+    <p> Revisa tu casilla de correos, recibirás un link que te redirigirá a la app.</p>
+  </div>
+  <div class="flex min-h-screen w-full justify-center items-center">
+
+    <div class="bg-gris text-text w-[400px] max-w-[90%] p-8 rounded-xl row flex-center flex shadow-[0_2px_20px_-15px_rgba(0,0,0,0.3)] shadow-accent">
+      <div class="col-6 form-widget w-full" aria-live="polite">
+        <h1 class="text-3xl text-accent mb-2">Iniciar Sesión</h1>
+        <p *ngIf="showEmail" class="text-sm mb-7 text-opacity-70 text-accent">Revise su casilla de correos</p>
+        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="w-full">
+          <div class="mb-6">
+            <label class=" mb-2" for="email">Email</label>
+            <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
+              formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
+              placeholder="prueba@prueba.com" />
           </div>
-        </div> -->
+          <div>
+            <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
+              [disabled]="loading">
+              {{ loading ? 'Enviando...' : 'Login' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+
+  </div>
 </div>

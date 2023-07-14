@@ -9,14 +9,17 @@ import {
 } from '@supabase/supabase-js'
 import { environment } from 'src/environments/environment'
 import { BudgetAlertClass, BudgetPercentage, CategoryType } from '../../models-interface/enums'
-import { TransactionsDetails } from '../../models-interface/interfaces'
-import { throwError } from 'rxjs'
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+
+
 
 export interface Profile {
   id?: string
   username: string
   website: string
-  avatar_url: string
+  full_name:string
+  role?:string
 }
 
 @Injectable({
@@ -25,12 +28,14 @@ export interface Profile {
 export class SupabaseService {
   private supabase: SupabaseClient
   _session: AuthSession | null = null
+  private _user: any;
+  eventSubject = new Subject<AuthChangeEvent>();
+
 
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
   }
 
-  // AUTH
   get session() {
     this.supabase.auth.getSession().then(({ data }) => {
       this._session = data.session
@@ -38,16 +43,38 @@ export class SupabaseService {
     return this._session
   }
 
-  profile(user: User) {
+  profile(user: User| null) {
     return this.supabase
       .from('profiles')
-      .select(`username, website, avatar_url`)
-      .eq('id', user.id)
+      .select(`*`)
+      .eq('id', user?.id)
       .single()
   }
 
   authChanges(callback: (event: AuthChangeEvent, session: Session | null) => void) {
-    return this.supabase.auth.onAuthStateChange(callback)
+    
+    // return this.supabase.auth.onAuthStateChange((event, session) => {
+    //   callback(event, session);
+    //   if (session) {
+    //     this.profile(session.user).then((profile) => {
+    //       this._user = profile;
+    //     });
+    //   } else {
+    //     this._user = null;
+    //   }
+    // });
+    this.supabase.auth.onAuthStateChange((event, session) => {
+      callback(event, session);
+      if (session) {
+        this.profile(session.user).then((profile) => {
+          this._user = profile;
+        });
+      } else {
+        this._user = null;
+      }
+      // Emitir el valor de event al observable
+      this.eventSubject.next(event);
+    });
   }
 
   signIn(email: string) {
@@ -75,7 +102,8 @@ export class SupabaseService {
     return this.supabase.storage.from('avatars').upload(filePath, file)
   }
 
-  //  TRANSACTIONS
+  
+  //CATEGORIES
   async getCategoriesExpenses(user_uuid: string) {
 
     let { data: category_expense_view, error } = await this.supabase
@@ -96,85 +124,6 @@ export class SupabaseService {
       .order('category_name', { ascending: true })
     return { category_income, error };
   }
-
-  async insertNewExpense(formData: {
-    expense_date: string,
-    description_expense: string,
-    category_expense_id: number | string,
-    expense_amount: number,
-    user_uuid: string
-  }) {
-
-    const { data, error } = await this.supabase
-      .from('expenses')
-      .insert([
-        formData
-      ])
-    return { data, error };
-  }
-  async insertNewIncome(formData: {
-    income_date: string,
-    description_income: string,
-    category_income_id: number | string,
-    income_amount: number,
-    user_uuid: string
-  }) {
-
-    const { data, error } = await this.supabase
-      .from('income')
-      .insert([
-        formData
-      ])
-    return { data, error };
-  }
-
-  //BALANCE
-  async getTransactions() {
-
-    const { data: transactions_details, error } = await this.supabase
-      .from('transactions_details')
-      .select('*')
-      .eq('user_uuid', '8085f1c3-464a-4a01-8878-555277c367e0');
-
-    //Refactorizacion de info
-    const transactions = transactions_details?.map((item: any) => {
-      if (item.transaction_type == CategoryType.Expense) {
-        item.amount = item.expense_amount * -1;
-      } else if (item.transaction_type == CategoryType.Income) {
-        item.amount = item.income_amount;
-      }
-      else {
-        item.amount = 0;
-      }
-      return item;
-
-    })
-    return { transactions, error };
-  }
-  async getBudgets(user_uuid: string) {
-
-    const { data: budgets_view, error } = await this.supabase
-      .from('budgets_view')
-      .select('*')
-      .eq('user_uuid', user_uuid);
-
-    const busgets = budgets_view?.map((item: any) => {
-      item.class = BudgetAlertClass.Normal;
-
-      let porcentaje = item.budget_sum / item.budget_expected * 100
-      console.log('porcentaje', porcentaje);
-      if (porcentaje > BudgetPercentage.Danger) {
-        item.class = BudgetAlertClass.Danger
-      } else if (porcentaje > BudgetPercentage.Warning) {
-        item.class = BudgetAlertClass.Warning
-      }
-      return item
-    })
-
-    return { budgets_view, error };
-  }
-
-  //CATEGORIES
   async updateCategoryExpense(id_expense: string | number, category_name: string, category_expense_description: string) {
 
     const { data: category_updated, error } = await this.supabase
@@ -327,6 +276,214 @@ export class SupabaseService {
       return { error: error.message };
     }
   }
+  async checkCategoryExpense(id_category_expense: number | string) {
+    try {
+      let { data: expenses, error } = await this.supabase
+        .from('expenses')
+        .select("*")
+        .eq('category_expense_id', id_category_expense)
+      if (error) {
+        throw new Error('Error al consultar gastos asociados a la categoría');
+      }
+      return { expenses, error }
+    } catch (error: any) {
+      console.log(error)
+      return { error: error.message };
+    }
+  }
+  async checkCategoryIncome(id_category_income: number | string) {
+    try {
+      let { data: incomes, error } = await this.supabase
+        .from('income')
+        .select("*")
+        .eq('category_income_id', id_category_income)
+      if (error) {
+        throw new Error('Error al consultar ingresos asociados a la categoría');
+      }
+      return { incomes, error }
+    } catch (error: any) {
+      console.log(error)
+      return { error: error.message };
+    }
+  }
+
+  //Expenses & Incomes
+  async insertNewExpense(formData: {
+    expense_date: string,
+    description_expense: string,
+    category_expense_id: number | string,
+    expense_amount: number,
+    user_uuid: string
+  }) {
+
+    const { data, error } = await this.supabase
+      .from('expenses')
+      .insert([
+        formData
+      ])
+    return { data, error };
+  }
+  async insertNewIncome(formData: {
+    income_date: string,
+    description_income: string,
+    category_income_id: number | string,
+    income_amount: number,
+    user_uuid: string
+  }) {
+
+    const { data, error } = await this.supabase
+      .from('income')
+      .insert([
+        formData
+      ])
+    return { data, error };
+  }
+
+  async getExpensesHistory(user_uuid: string) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    const { data: expense_history, error } = await this.supabase
+      .from('expense_history_new')
+      .select('*')
+      .eq('user_uuid', user_uuid)
+      .gte('date', `${currentYear}-${currentMonth}-01`)
+      .lt('date', `${currentYear}-${currentMonth + 1}-01`);
+
+    return { expense_history, error };
+  }
+
+  async getIncomesHistory(user_uuid: string) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    let { data: income_history, error } = await this.supabase
+      .from('income_history_new')
+      .select('*')
+      .eq('user_uuid', user_uuid)
+      .gte('date', `${currentYear}-${currentMonth}-01`)
+      .lt('date', `${currentYear}-${currentMonth + 1}-01`);
+    return { income_history, error };
+  }
+  async updateExpense(id_expense: number, category_expense_id: number | string, description_expense: string, expense_amount: number, expense_date: Date | string) {
+
+    const { data, error } = await this.supabase
+      .from('expenses')
+      .update({
+        category_expense_id,
+        description_expense,
+        expense_amount,
+        expense_date
+      })
+      .eq('id', id_expense)
+      .select()
+
+    return { data, error };
+  }
+  async updateIncome(id_income: number, category_income_id: number | string, description_income: string, income_amount: number, income_date: Date | string) {
+
+    const { data, error } = await this.supabase
+      .from('income')
+      .update({
+        category_income_id,
+        description_income,
+        income_amount,
+        income_date
+      })
+      .eq('id', id_income)
+      .select()
+
+    return { data, error };
+  }
+
+
+
+
+
+
+
+
+  async deleteExpense(expense_id:number){
+    try {
+      // Validar el tipo de id_income
+      if (typeof expense_id !== 'number') {
+        throw new Error('expense_id debe ser un número');
+      }
+  
+      const { error } = await this.supabase
+      .from('expenses')
+      .delete()
+      .eq('id', expense_id)
+  
+      if (error) {
+        throw new Error('Error al eliminar la transacción');
+      }
+  
+      return { error: null };
+    } catch (error: any) {
+      // Manejar el error y retornar el mensaje
+      return { error: error.message };
+    }
+    
+  }
+  async deleteIncome(income_id:number){
+    try {
+      // Validar el tipo de id_income
+      if (typeof income_id !== 'number') {
+        throw new Error('expense_id debe ser un número');
+      }
+  
+      const { error } = await this.supabase
+      .from('income')
+      .delete()
+      .eq('id', income_id)
+  
+      if (error) {
+        throw new Error('Error al eliminar la transacción');
+      }
+  
+      return { error: null };
+    } catch (error: any) {
+      // Manejar el error y retornar el mensaje
+      return { error: error.message };
+    }
+  }
+
+
+  //Budgets
+  async getBudgets(user_uuid: string) {
+
+    const { data: budgets_view, error } = await this.supabase
+      .from('budgets_view')
+      .select('*')
+      .eq('user_uuid', user_uuid);
+
+    const busgets = budgets_view?.map((item: any) => {
+      item.class = BudgetAlertClass.Normal;
+
+      let porcentaje = item.budget_sum / item.budget_expected * 100
+
+      if (porcentaje > BudgetPercentage.Over) {
+        item.over = true
+      } else {
+        item.over = false
+      }
+
+      if (porcentaje >= 0 && porcentaje <= BudgetPercentage.Warning) {
+        item.class = BudgetAlertClass.Normal
+      } else if (porcentaje > BudgetPercentage.Warning && porcentaje < BudgetPercentage.Danger) {
+        item.class = BudgetAlertClass.Warning
+      } else {
+        item.class = BudgetAlertClass.Danger
+      }
+      return item
+    })
+    return { budgets_view, error };
+  }
+
+
 
   async updateBudgetExpense(id_budget: string | number, budget_expected: number) {
 
@@ -352,7 +509,7 @@ export class SupabaseService {
     }
 
   }
-  async createBudgetExpense(category_id: string | number, budget_expected: number, user_uuid:string) {
+  async createBudgetExpense(category_id: string | number, budget_expected: number, user_uuid: string) {
 
     try {
       if (!category_id || !user_uuid) {
@@ -367,8 +524,8 @@ export class SupabaseService {
       const { data: budgets, error } = await this.supabase
         .from('budgets')
         .insert([
-          { 
-            budget_date: formattedDate, 
+          {
+            budget_date: formattedDate,
             category_id,
             budget_expected,
             user_uuid
