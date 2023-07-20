@@ -4,9 +4,16 @@
 
 export const environment = {
   production: false,
-  supabaseUrl: 'https://gcjgzaprqeuqoazoujbg.supabase.co',
-  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjamd6YXBycWV1cW9hem91amJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyMjYzMzIsImV4cCI6MjAwMTgwMjMzMn0.E-qTzHoEqcY5Fh1W5MApyh1wM4fiMnCpMnc4GIlJoss',
-  baseUrl: 'http://localhost:6969/api/'
+  baseUrl: 'http://localhost:4200/',
+
+  // local
+  // supabaseUrl: 'http://localhost:54321',
+  // supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+  
+  // Dev remoto
+  supabaseUrl: 'https://mdksvmcmnozfbyvbgpss.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ka3N2bWNtbm96ZmJ5dmJncHNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk2MTkxODYsImV4cCI6MjAwNTE5NTE4Nn0.kTbZLzpW5n8Z53g-8UOZF3Qx_WeZcc_-wxD7ZcF4ZAA',
+
 }
 
 /*

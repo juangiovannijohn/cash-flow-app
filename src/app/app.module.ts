@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './core/shared/shared.module';
+import { ResetPasswordComponent } from './public/reset-password/reset-password.component';
+import { FormsModule, FormBuilder } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -13,10 +15,12 @@ import { SharedModule } from './core/shared/shared.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+FormsModule
+
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [ResetPasswordComponent, FormBuilder],
+  bootstrap: [AppComponent, ]
 })
 export class AppModule { 
   constructor(){

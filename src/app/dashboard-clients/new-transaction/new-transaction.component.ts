@@ -8,6 +8,7 @@ import { DatePipe } from '@angular/common';
 import { Profile, SupabaseService } from 'src/app/core/shared/services/supabase.service';
 import { AuthSession } from '@supabase/supabase-js';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserRoles } from 'src/app/core/models-interface/enums';
 
 @Component({
   selector: 'app-new-transaction',
@@ -15,18 +16,15 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./new-transaction.component.css']
 })
 export class NewTransactionComponent implements OnInit {
-  session: AuthSession | any = this.supabase.session ? this.supabase.session : null
-  userRole:string = '';
+  user: any;
   profile!: Profile | any;
   expensesForm: FormGroup;
   incomeForm: FormGroup;
   expensesCategories: any[] | null = []
   incomeCategories: any[] | null = []
-
-  expensesTrue:boolean = false;
-  showMsg: boolean = false;
-  msgSuccess: boolean = false;
-  msgText: string = '';
+  showAlertModal:boolean=false;
+  classesModal:string = '';
+  messageModal:string = '';
 
   constructor(private formBuilder: FormBuilder,
     private datePipe: DatePipe,
@@ -47,31 +45,25 @@ export class NewTransactionComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.getProfile();
-
+  async ngOnInit(): Promise<void> {
+    this.user = await this.supabase.getUser();
+    this.getProfile(this.user);
   }
-  async getProfile() {
+  async getProfile(user:any) {
     try {
-      const { user } = this.session
-      let { data: profile, error, status } = await this.supabase.profile(user)
-      if (error && status !== 406) {
-        throw error
-      }
-      if (profile) {
-        if (profile['role'] != 'user') {
-          console.log('se cerro sesion')
-          this.supabase.signOut();
-          this.router.navigate(['login']);
-          return
-        }
-        this.userRole = profile['role'] ? profile['role'] : '';
-        this.profile = profile;
-        this.getCategories(this.profile.id);
+      const role =  user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;  
+
+      if (role == UserRoles.Normal || role == UserRoles.Premium) {
+        this.getCategories(user.id);
+      } else {
+        console.log('se cerro sesion')
+        this.supabase.signOut();
+        this.router.navigate(['login']);
       }
     } catch (error) {
+      console.log(error)
       if (error instanceof Error) {
-        alert(error.message)
+        this.openAlert('text-red', `${error.message}`);
       }
     }
   }
@@ -94,29 +86,27 @@ export class NewTransactionComponent implements OnInit {
   submitExpenseForm() {
 
     if (this.expensesForm.valid) {
-      console.log(this.expensesForm.value);
       const formData = {
         expense_date: this.expensesForm.value.fecha,
         description_expense: this.expensesForm.value.detalle,
         category_expense_id: this.expensesForm.value.categoria,
         expense_amount: this.expensesForm.value.monto,
-        user_uuid: this.profile.id
+        user_uuid: this.user.id
       }
-      console.log({ formData });
 
       //Service
       this.supabase.insertNewExpense(formData)
         .then(resp =>{
           if (resp.error) {
             console.warn(resp.error)
-            this.showAlert(true,true, false, 'Error al guardar el gasto, intente nuevamente', 3000);
-          } else {
-            this.showAlert(true,true, true, 'Nuevo gasto guardado', 3000);           
+            this.openAlert('text-red', 'Error al guardar el gasto, intente nuevamente');  
+           } else {
+            this.openAlert('text-accent', 'Nuevo gasto Guardado');          
           }
         })
         .catch(err => {
           console.warn(err)
-          this.showAlert(true, true, false, 'Error al guardar el gasto, intente nuevamente', 3000);
+          this.openAlert('text-red', 'Error al guardar el gasto, intente nuevamente'); 
         });
 
       // Restablecer los valores y el estado del formulario
@@ -128,35 +118,34 @@ export class NewTransactionComponent implements OnInit {
       });
 
     } else {
-      this.showAlert(true,true, false, 'Formulario inválido', 3000);
+      this.openAlert('text-red', 'Formulario inválido'); 
     }
   }
+
   submitIncomeForm() {
     if (this.incomeForm.valid) {
-      console.log(this.incomeForm.value);
       const formData = {
         income_date: this.incomeForm.value.fecha,
         description_income: this.incomeForm.value.detalle,
         category_income_id: this.incomeForm.value.categoria,
         income_amount: this.incomeForm.value.monto,
-        user_uuid: this.profile.id
+        user_uuid: this.user.id
       }
-      console.log({ formData });
 
       //Service
       this.supabase.insertNewIncome(formData)
       .then(resp =>{
         if (resp.error) {
           console.warn(resp.error)
-          this.showAlert(false,true, false, 'Error al guardar el ingreso, intente nuevamente', 3000);
+          this.openAlert('text-red', 'Error al guardar el ingreso, intente nuevamente'); 
         } else {
-          this.showAlert(false,true, true, 'Nuevo ingreso guardado', 3000);           
+          this.openAlert('text-accent', 'Ingreso cargado correctamente');       
         }
       })
       .catch(err => {
         console.warn(err)
-        this.showAlert(false, true, false, 'Error al guardar el ingreso, intente nuevamente', 3000);
-      });
+        this.openAlert('text-red', 'Error al guardar el ingreso, intente nuevamente'); 
+     });
       // Restablecer los valores y el estado del formulario
       this.incomeForm.patchValue({
         fecha: this.datePipe.transform(new Date(), 'yyyy-MM-dd'),
@@ -166,20 +155,19 @@ export class NewTransactionComponent implements OnInit {
       });
       
     } else {      
-      this.showAlert(false,true, false, 'Formulario inválido', 3000);
+      this.openAlert('text-red', 'Formulario inválido'); 
     }
   }
 
-  showAlert(expensesTrue: boolean, showMsg:boolean, msgSuccess:boolean, msgText:string, time:number){
-    this.expensesTrue = expensesTrue
-    this.showMsg = showMsg;
-    this.msgSuccess = msgSuccess;
-    this.msgText = msgText;
-    setTimeout(()=>{
-      this.showMsg = false;
-      this.msgSuccess = false;
-      this.msgText = '';
-    }, time);
+  openAlert(className:string, message:string){
+    this.messageModal = message;
+    this.classesModal = className;
+    this.showAlertModal = true;
+  }
+  closeAlert(){
+    this.messageModal = '';
+    this.classesModal = '';
+    this.showAlertModal = false;
   }
 
 }

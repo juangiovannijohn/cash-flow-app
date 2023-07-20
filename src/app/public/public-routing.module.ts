@@ -4,14 +4,20 @@ import { BlogComponent } from './blog/containers/blog.component';
 import { HomeComponent } from './home/containers/home.component';
 import { LoginComponent } from './login/containers/login.component';
 import { PublicComponent } from './public.component';
+import { SignupComponent } from './signup/signup.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
 
 const routes: Routes = [
   {
     path:'', component: PublicComponent, children:
     [
       {path: 'landing', component: HomeComponent},
-      {path: '', component: LoginComponent},
-      {path: 'blog', component: BlogComponent }
+      {path: 'login', component: LoginComponent},
+      {path: 'blog', component: BlogComponent },
+      {path: 'signup', component: SignupComponent},
+      // {path: 'access_token', component: ResetPasswordComponent},
+      {path: 'reset', component: RequestResetPasswordComponent},
     ]
   },
   {

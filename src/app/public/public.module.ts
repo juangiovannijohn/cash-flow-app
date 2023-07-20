@@ -9,6 +9,9 @@ import { BlogComponent } from './blog/containers/blog.component';
 import { SharedModule } from '../core/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationUserComponent } from './confirmation-user/confirmation-user.component';
+import { SignupComponent } from './signup/signup.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RequestResetPasswordComponent } from './request-reset-password/request-reset-password.component';
 
 
 @NgModule({
@@ -17,7 +20,10 @@ import { ConfirmationUserComponent } from './confirmation-user/confirmation-user
     PublicComponent,
     LoginComponent,
     BlogComponent,
-    ConfirmationUserComponent
+    ConfirmationUserComponent,
+    SignupComponent,
+    ResetPasswordComponent,
+    RequestResetPasswordComponent
   ],
   imports: [
     CommonModule,

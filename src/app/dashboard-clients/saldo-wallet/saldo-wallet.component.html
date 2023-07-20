@@ -105,9 +105,8 @@
                 [message]="'¿Seguro desea eliminar la transacción?'" (confirmed)="deleteTransaction(tr.id, tr.typeExpense)" (cancelled)="closeModal()"
                 *ngIf="showModal">
                 </app-confirm-delete-category>
-                <app-alert-message-modal [message]="
-                'Error al eliminar el movimiento.'
-                " (close)="closeAlert()" *ngIf="showAlert">
+                <!-- Alert -->
+                <app-alert-message-modal [message]="messageModal"  [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlert">
                 </app-alert-message-modal>
             </div>
         </div>

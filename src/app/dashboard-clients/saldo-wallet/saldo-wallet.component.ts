@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TransactionHistory, TransactionsDetails } from 'src/app/core/models-interface/interfaces';
 import { Profile, SupabaseService } from 'src/app/core/shared/services/supabase.service';
-import { CategoryType } from 'src/app/core/models-interface/enums';
+import { CategoryType, UserRoles } from 'src/app/core/models-interface/enums';
 import { AuthSession } from '@supabase/supabase-js';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -11,9 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./saldo-wallet.component.css'],
 })
 export class SaldoWalletComponent implements OnInit {
-  session: AuthSession | any = this.supabase.session ? this.supabase.session : null
-  userRole:string = '';
-  profile!: Profile | any;
+  user: any;
   transactionsHistory: TransactionHistory[] = [];
   budgets: any[] | null = [];
   CategoryType: any = CategoryType;
@@ -22,35 +20,32 @@ export class SaldoWalletComponent implements OnInit {
   selectedCategoryId: number = 0;
   showModal: boolean = false;
   showAlert: boolean = false;
-  constructor(private supabase: SupabaseService ,private router: Router, private route: ActivatedRoute) { }
+  classesModal:string = '';
+  messageModal:string = '';
 
-  ngOnInit(): void {
-    this.getProfile();
+  constructor(private supabase: SupabaseService ,private router: Router, private route: ActivatedRoute) { }
+  async ngOnInit(): Promise<void> {
+    this.user = await this.supabase.getUser();
+    this.getProfile(this.user);
   }
 
-  async getProfile() {
+  async getProfile(user:any) {
     try {
-      const { user } = this.session
-      let { data: profile, error, status } = await this.supabase.profile(user)
-      if (error && status !== 406) {
-        throw error
-      }
-      if (profile) {
-        if (profile['role'] != 'user') {
-          console.log('se cerro sesion')
-          this.supabase.signOut();
-          this.router.navigate(['login']);
-          return
-        }
-        this.userRole = profile['role'] ? profile['role'] : '';
-        this.profile = profile;
-        this.getCategories(this.profile.id);
-        this.getTransactions(this.profile.id);
-        this.getCategory(this.profile.id);
+      const role =  user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;  
+      
+      if (role == UserRoles.Normal || role == UserRoles.Premium) {
+        this.getCategories(user.id);
+        this.getTransactions(user.id);
+        this.getCategory(user.id);
+      } else {
+        console.log('se cerro sesion')
+        this.supabase.signOut();
+        this.router.navigate(['login']);
       }
     } catch (error) {
+      console.log(error)
       if (error instanceof Error) {
-        alert(error.message)
+        this.openAlert('text-red', `${error.message}`);
       }
     }
   }
@@ -116,9 +111,9 @@ export class SaldoWalletComponent implements OnInit {
     });
   }
   updateTransaction(isExpense: boolean, id_transaction: number, category_id: number | string, description_transaction: string, transaction_amount: number, transaction_date: Date | string) {
-    console.log('categoria_id', category_id)
+    
     if (isExpense) {
-      console.log('actualizar gasto')
+      
       this.supabase.updateExpense(id_transaction, category_id, description_transaction, transaction_amount, transaction_date).then((resp) => {
         if (!resp.error) {
           setTimeout(() => {
@@ -129,7 +124,7 @@ export class SaldoWalletComponent implements OnInit {
         }
       });
     } else {
-      console.log('actualizar ingreso')
+      
       this.supabase.updateIncome(id_transaction, category_id, description_transaction, transaction_amount, transaction_date).then((resp) => {
         if (!resp.error) {
           setTimeout(() => {
@@ -151,7 +146,7 @@ export class SaldoWalletComponent implements OnInit {
         resp => {
           if (resp.error) {
             this.closeModal();
-            this.openAlert();
+            this.openAlert('text-red', 'Error al eliminar el movimiento.');
           } else {
             setTimeout(() => {
               location.reload();
@@ -164,7 +159,7 @@ export class SaldoWalletComponent implements OnInit {
         resp => {
           if (resp.error) {
             this.closeModal();
-            this.openAlert();
+            this.openAlert('text-red', 'Error al eliminar el movimiento.');
           } else {
             setTimeout(() => {
               location.reload();
@@ -180,10 +175,14 @@ export class SaldoWalletComponent implements OnInit {
   openModal() {
     this.showModal = true;
   }
-  openAlert() {
+  openAlert(className:string, message:string){
+    this.messageModal = message;
+    this.classesModal = className;
     this.showAlert = true;
   }
-  closeAlert() {
+  closeAlert(){
+    this.messageModal = '';
+    this.classesModal = '';
     this.showAlert = false;
   }
 }

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { LoginService } from '../services/login.service';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators  } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserRoles } from 'src/app/core/models-interface/enums';
 import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 
 @Component({
@@ -10,95 +10,97 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent  {
+export class LoginComponent implements OnInit  {
   loading = false
-  showEmail= false
-
+  showLoginWP= false;
+  user:any;
   signInForm = this.formBuilder.group({
-    email: '',
+    email: ['', [Validators.required, Validators.email]]
   })
-
-  constructor(
+  loginFormWP = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    pass: ['', [Validators.required, Validators.minLength(6)]]
+  });
+  showAlertModal:boolean=false;
+  classesModal:string = '';
+  messageModal:string = '';
+  constructor(private router: Router, private route: ActivatedRoute,
     private readonly supabase: SupabaseService,
     private readonly formBuilder: FormBuilder
-  ) {}
+  ) {
+    //TODO mostrar mensajes dinamicos en base a los params
+    // params = pass-reseted=1
+    // pass-reseted
+    // new-user
+    // req-reset-pass
+
+  }
+  async ngOnInit(): Promise<void> {
+  }
 
   async onSubmit(): Promise<void> {
     try {
       this.loading = true
       const email = this.signInForm.value.email as string
-      const { error } = await this.supabase.signIn(email)
+      const { error } = await this.supabase.loginWithOtp(email)
       if (error) throw error
-      this.showEmail = true;
-      setTimeout(() => {
-        this.showEmail = false
-      }, 4000)
+        this.openAlert('text-accent', 'Revisa tu casilla de correos para loguearte.')
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message)
+        this.openAlert('text-red', `${error.message}`)
       }
     } finally {
       this.signInForm.reset()
       this.loading = false
     }
   }
+  async login(): Promise<void> {
+    try {
+      this.loading = true
+      const email = this.loginFormWP.value.email as string
+      const pass = this.loginFormWP.value.pass as string
+      const { userLogged, error } = await this.supabase.loginWithPassword(email, pass)
+      if (error) throw error
+      //Ruteo interno
+      if (userLogged.user) {
+        const role = userLogged.user.user_metadata['role'] ? userLogged.user.user_metadata['role'] : userLogged.profile.role ; //Aca valido que el rol este en la tabla profile o en la tabla users
+        switch (role) {
+          case UserRoles.Normal:
+            this.router.navigate(['intranet/movimientos']);
+            break;
+            case UserRoles.Premium:
+              this.router.navigate(['intranet/movimientos']);
+            break;
+            case UserRoles.Colaborador:
+              this.router.navigate(['dashboard-admin']);
+            break;
+            case UserRoles.Admin:
+              this.router.navigate(['dashboard-admin']);
+            break;
+          default:
+            this.router.navigate(['login']);
+            break;
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        this.openAlert('text-red', `${error.message}`);
+        this.supabase.signOut();
+      }
+    } finally {
+      this.loginFormWP.reset()
+      this.loading = false
+    }
+  }
+  openAlert(className:string, message:string){
+    this.messageModal = message;
+    this.classesModal = className;
+    this.showAlertModal = true;
+  }
+  closeAlert(){
+    this.messageModal = '';
+    this.classesModal = '';
+    this.showAlertModal = false;
+  }
+
 }
-
-
-// get usuario(){
-//   return this.loginService.Usuario;
-// }
-// login: FormGroup;
-// loginError:boolean = false;
-
-  
-//   constructor(
-//     private loginService:LoginService,
-//     private form: FormBuilder,
-//     private router: Router
-//     ) {
-//       this.login= this.form.group({
-//         email:['manu@manu.com', [Validators.required, Validators.email]],
-//         pass:['manu', [Validators.required]],
-//       })
-//     }
-
-//   ngOnInit(): void {
-
-
-//   }
-
-
-//   campoNoValido(campo: string ){
-//     return this.login.get(campo)?.invalid
-//              && this.login.get(campo)?.touched;
-//   }
-
-//   onSubmit() {
-   
-//     this.loginService.login(this.login.value.email,this.login.value.pass ).subscribe({
-//       next: (resp:any) => {
-//         if (resp.ok) {
-//           //TODO: mejorar esta navegacion con los guards y el objeto Usuario que vendra del service
-//           if(resp.user.role === 'user') {
-//             this.router.navigate(['/intranet']);
-//           } 
-//           if (resp.user.role === 'admin') {
-//               this.router.navigate(['/dashboard-admin']);
-//           } 
-//           if (resp.user.role === 'public') {
-//             this.router.navigate(['/blog']);
-//           } 
-  
-//         }else{
-//           this.loginError = true;
-//         }
-//       },
-//       error: err => {
-//         console.log(err);
-//         this.loginError = true;
-//       }
-//     })
-//   }
-
-// }
