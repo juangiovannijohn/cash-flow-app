@@ -30,7 +30,7 @@
             {{ loading ? 'Loading ...' : 'Actualizar' }}
           </button>
         </div>
-      </form>
+      </form>showDetailsconfirm
     </div>
   </div> -->
   <!-- CATEGORIAS PERSONALIZADAS -->
@@ -156,10 +156,6 @@
                 <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'"
                   (confirmed)="deleteCategory(catExp.id, true)" (cancelled)="closeModal()" *ngIf="showModal">
                 </app-confirm-delete-category>
-                <app-alert-message-modal [message]="
-                    'No puede eliminar una categoría que tiene gastos registrados.'
-                  " (close)="closeAlert()" *ngIf="showAlert">
-                </app-alert-message-modal>
               </div>
             </div>
           </div>
@@ -255,13 +251,11 @@
                   (click)="openModal()">
                   Borrar
                 </button>
-                <app-confirm-delete-category (confirmed)="deleteCategory(catInc.id, false)" (cancelled)="closeModal()"
+                <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'" (confirmed)="deleteCategory(catInc.id, false)" (cancelled)="closeModal()"
                   *ngIf="showModal">
                 </app-confirm-delete-category>
-                <app-alert-message-modal [message]="
-                    'No puede eliminar una categoría que tiene gastos o ingresos registrados.'
-                  " (close)="closeAlert()" *ngIf="showAlert">
-                </app-alert-message-modal>
+                
+
               </div>
             </div>
           </div>
@@ -269,4 +263,7 @@
       </div>
     </div>
   </div>
+  <!-- Alert -->
+  <app-alert-message-modal [message]="messageModal"  [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlert">
+  </app-alert-message-modal>
 </div>

@@ -1,0 +1,43 @@
+<div class="bg-backg min-h-screen w-full">
+  <div class="flex min-h-screen w-full justify-center items-center">
+
+    <div
+      class="bg-gris text-text w-[400px] max-w-[90%] p-8 rounded-xl flex-col flex-center flex shadow-[0_2px_20px_-15px_rgba(0,0,0,0.3)] shadow-accent">
+      <div class="col-6 form-widget w-full" aria-live="polite">
+        <h1 class="text-3xl text-accent mb-2">Crear nuevo usuario</h1>
+        <div>
+          <form [formGroup]="signupForm" (ngSubmit)="signup()" class="w-full">
+            <div class="mb-1">
+              <label class=" mb-2" for="email">Email</label>
+              <input [ngClass]="signupForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
+                formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email" placeholder="" />
+            </div>
+            <div class="mb-1">
+              <label class=" mb-2" for="pass">Password</label>
+              <input [ngClass]="signupForm.get('pass')?.invalid ? 'ng-valid' : 'ng-invalid' " id="pass"
+                formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="" />
+            </div>
+            <div class="mb-4">
+              <label class=" mb-2" for="passConfirm">Confirmar Password</label>
+              <input [ngClass]="signupForm.get('passConfirm')?.invalid ? 'ng-valid' : 'ng-invalid' " id="passConfirm"
+                formControlName="passConfirm" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="" />
+            </div>
+            <!-- TODO formulario completo con nombre de usuario, web, etc -->
+            <div>
+              <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
+                [disabled]="loading">
+                {{ loading ? 'Enviando...' : 'Crear cuenta' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+      <a class="text-sm text-start w-full py-1 mt-2 hover:text-accent hover:underline" routerLink="/login">Login</a>
+
+    </div>
+    <app-alert-message-modal [message]="messageModal"  [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlertModal">
+    </app-alert-message-modal>
+
+  </div>
+</div>

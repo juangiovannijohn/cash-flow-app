@@ -7,6 +7,7 @@ import { Component, OnInit , EventEmitter, Input, Output } from '@angular/core';
 })
 export class AlertMessageModalComponent implements OnInit {
   @Input() message: string = '';
+  @Input() classes: string = '';
   @Output() close = new EventEmitter<void>();
   constructor() { }
 

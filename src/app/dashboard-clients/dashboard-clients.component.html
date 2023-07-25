@@ -31,10 +31,11 @@
                         <li>
                             <button
                                 class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-4 px-3 py-1 rounded"
-                                (click)="cerrarSesion()">Cerrar sesión</button>
+                                (click)="openModal()">
+                                Cerrar sesión
+                            </button>
                         </li>
                     </ul>
-
 
             </div>
             <!-- Botón de menú mobile -->
@@ -80,9 +81,12 @@
                 <span [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'"
                     class=" text-xs text-accent">Movimientos</span>
             </a>
-            <button class="flex flex-col items-center justify-start" (click)="cerrarSesion()"><img class="" width="25px"
+            <button class="flex flex-col items-center justify-start" (click)="openModal()"><img class="" width="25px"
                     height="auto" src="../../assets/img/signout-1.png" alt=""></button>
         </div>
     
     </div>
+    <!-- Confirm Modal -->
+    <app-confirm-delete-category [message]="'¿Seguro desea cerrar sesión?'" (confirmed)="cerrarSesion()" (cancelled)="closeModal()" *ngIf="showModal">
+    </app-confirm-delete-category>
 </div>
