@@ -1,61 +1,77 @@
 <div class="bg-backg min-h-screen w-full">
   <div class="flex min-h-screen w-full justify-center items-center">
 
-    <div class="bg-gris text-text w-[400px] max-w-[90%] p-8 rounded-xl flex-col flex-center flex shadow-[0_2px_20px_-15px_rgba(0,0,0,0.3)] shadow-accent">
-      <div  class="col-6 form-widget w-full" aria-live="polite">
+    <div
+      class="bg-gris text-text w-[400px] max-w-[90%] p-8 rounded-xl flex-col flex-center flex shadow-[0_2px_20px_-15px_rgba(0,0,0,0.3)] shadow-accent">
+      <div class="col-6 form-widget w-full" aria-live="polite">
         <h1 class="text-3xl text-accent mb-2">Iniciar Sesión</h1>
- <div *ngIf="!showLoginWP">
-        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="w-full">
-          <div class="mb-6">
-            <label class=" mb-2" for="email">Email</label>
-            <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
-              formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
-              placeholder="prueba@prueba.com" />
+        <ng-container *ngIf="!showIntranet">
+          <!-- Sin password -->
+          <div *ngIf="!showLoginWP">
+            <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="w-full">
+              <div class="mb-6">
+                <label class=" mb-2" for="email">Email</label>
+                <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
+                  formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
+                  placeholder="prueba@prueba.com" />
+              </div>
+              <div>
+                <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
+                  [disabled]="loading || showIntranet" [ngClass]="showIntranet ? 'opacity-50' : 'opacity-100' ">
+                  {{ loading ? 'Enviando...' : 'Login' }}
+                </button>
+              </div>
+            </form>
           </div>
-          <div>
-            <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
-              [disabled]="loading">
-              {{ loading ? 'Enviando...' : 'Login' }}
+
+
+          <!-- Con pass -->
+          <div *ngIf="showLoginWP">
+            <form [formGroup]="loginFormWP" (ngSubmit)="login()" class="w-full">
+              <div class="mb-2">
+                <label class=" mb-2" for="email">Email</label>
+                <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
+                  formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
+                  placeholder="prueba@prueba.com" />
+              </div>
+              <div class="mb-6">
+                <label class=" mb-2" for="pass">Password</label>
+                <input [ngClass]="signInForm.get('pass')?.invalid ? 'ng-valid' : 'ng-invalid' " id="pass"
+                  formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="a" />
+              </div>
+              <div>
+                <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
+                  [disabled]="loading || showIntranet" [ngClass]="showIntranet ? 'opacity-50' : 'opacity-100' ">
+                  {{ loading ? 'Enviando...' : 'Login pass' }}
+                </button>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="!showIntranet" class="flex flex-row justify-between mt-2">
+            <button class="block text-sm text-start w-full  py-1 hover:text-accent hover:underline rounded-md"
+              (click)="showLoginWP = !showLoginWP">
+              Login con {{showLoginWP ? 'Magic Link': 'Email y Password' }}
             </button>
+            <a *ngIf="showLoginWP"
+              class="block text-sm text-start w-full py-1 hover:text-accent hover:underline rounded-md"
+              routerLink="/reset">Olvide mi contraseña</a>
           </div>
-        </form>
-      </div>
+        </ng-container>
+        <ng-container *ngIf="showIntranet;else newUser">
+          <h4 class="text-xl mt-4 mb-1">Hola ! </h4>
+          <a class="text-base text-start hover:underline  mt-2 text-accent hover:text-text/80 hover:font-medium"
+            routerLink="/intranet/movimientos"> Ingresar -> </a>
+        </ng-container>
+        <ng-template #newUser>
+          <a class="text-sm text-start hover:underline py-1 text-accent hover:text-text" routerLink="/signup"> Crear
+            usuario </a>
+        </ng-template>
 
       </div>
-      <div *ngIf="showLoginWP">
-        <form [formGroup]="loginFormWP" (ngSubmit)="login()" class="w-full">
-          <div class="mb-2">
-            <label class=" mb-2" for="email">Email</label>
-            <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
-              formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
-              placeholder="prueba@prueba.com" />
-          </div>
-          <div class="mb-6">
-            <label class=" mb-2" for="pass">Password</label>
-            <input [ngClass]="signInForm.get('pass')?.invalid ? 'ng-valid' : 'ng-invalid' " id="pass"
-              formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password"
-              placeholder="a" />
-          </div>
-          <div>
-            <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
-              [disabled]="loading">
-              {{ loading ? 'Enviando...' : 'Login pass' }}
-            </button>
-          </div>
-        </form>
-      </div>
-      <div class="flex flex-row justify-between mt-2">
-        <button class="block text-sm text-start w-full  py-1 hover:text-accent hover:underline rounded-md" (click)="showLoginWP = !showLoginWP">
-          Login con  {{showLoginWP ?  'Magic Link': 'Email y Password' }} 
-        </button>
-        <a *ngIf="showLoginWP" class="block text-sm text-start w-full py-1 hover:text-accent hover:underline rounded-md"  routerLink="/reset" >Olvide mi contraseña</a>
-      </div>
-      <a class="text-sm text-start hover:underline py-1 text-accent hover:text-text"  routerLink="/signup" > Crear usuario </a>
 
     </div>
-
   </div>
-</div>
   <!-- Alert -->
-  <app-alert-message-modal [message]="messageModal"  [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlertModal">
+  <app-alert-message-modal [message]="messageModal" [classes]="classesModal" (close)="closeAlert()"
+    *ngIf="showAlertModal">
   </app-alert-message-modal>

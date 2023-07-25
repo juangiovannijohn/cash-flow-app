@@ -6,23 +6,36 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './core/shared/shared.module';
 import { ResetPasswordComponent } from './public/reset-password/reset-password.component';
-import { FormsModule, FormBuilder } from '@angular/forms';
+import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { HomeComponent } from './public/home/containers/home.component';
+import { LoginComponent } from './public/login/containers/login.component';
+import { BlogComponent } from './public/blog/containers/blog.component';
+import { ConfirmationUserComponent } from './public/confirmation-user/confirmation-user.component';
+import { SignupComponent } from './public/signup/signup.component';
+import { RequestResetPasswordComponent } from './public/request-reset-password/request-reset-password.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent,
+    LoginComponent,
+    BlogComponent,
+    ConfirmationUserComponent,
+    SignupComponent,
+    ResetPasswordComponent,
+    RequestResetPasswordComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-FormsModule
-
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [ResetPasswordComponent, FormBuilder],
-  bootstrap: [AppComponent, ]
+  bootstrap: [AppComponent,]
 })
-export class AppModule { 
-  constructor(){
+export class AppModule {
+  constructor() {
   }
 }

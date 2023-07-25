@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators  } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { Subscription } from 'rxjs';
 import { UserRoles } from 'src/app/core/models-interface/enums';
 import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit  {
   showAlertModal:boolean=false;
   classesModal:string = '';
   messageModal:string = '';
+  showIntranet: boolean = false;
   constructor(private router: Router, private route: ActivatedRoute,
     private readonly supabase: SupabaseService,
     private readonly formBuilder: FormBuilder
@@ -33,11 +35,14 @@ export class LoginComponent implements OnInit  {
     // pass-reseted
     // new-user
     // req-reset-pass
-
   }
   async ngOnInit(): Promise<void> {
+    this.supabase.authChanges(this.handleAuthChange);
   }
-
+  // muestra un link de ingreso o no si la session esta abierta.
+  handleAuthChange = (event: AuthChangeEvent, session: Session | null) => {
+    this.showIntranet = session ? true : false;
+  };
   async onSubmit(): Promise<void> {
     try {
       this.loading = true

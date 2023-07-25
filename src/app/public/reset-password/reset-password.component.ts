@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-reset-password',
@@ -34,6 +35,17 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    if (!environment.production) {
+      console.log('hola reset-password component---------')
+      const urlRelativa = this.router.url;
+      const urlAbsoluta = this.route.snapshot.url.map(segment => segment.path).join('/');
+      const urlCompleta = `${window.location.origin}/${urlAbsoluta}`;
+      console.log('URL completa:', window.location.href);
+      console.log('urlRelativa(desp de la /)', urlRelativa);
+      console.log('urlAbsoluta(antes de la /)', urlAbsoluta);
+      console.log('URL completa:', urlCompleta);
+      console.log('---------------------')
+    }
     if (this.supabase.session) {
       this.user =  this.supabase.session.user
       // this.resetPassForm.patchValue({
@@ -54,7 +66,9 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
     const newPass = this.resetPassForm.value.pass;
-    this.supabase
+    try {
+      this.loading = true
+      this.supabase
       .resetPassword(newPass)
       .then((resp: any) => {
         if (resp.error) {
@@ -67,7 +81,15 @@ export class ResetPasswordComponent implements OnInit {
       .catch((error) => {
         this.openAlert('text-red', `${error}`);
       });
+    } catch (error) {
+      this.openAlert('text-red', `${error}`);
+    } finally{
+      this.resetPassForm.reset()
+      this.loading = false
+    }
+
   }
+  
   openAlert(className: string, message: string) {
     this.messageModal = message;
     this.classesModal = className;

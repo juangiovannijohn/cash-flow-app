@@ -1,20 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  AuthChangeEvent,
-  AuthSession,
-  createClient,
-  Session,
-  SupabaseClient,
-  User,
-} from '@supabase/supabase-js';
+import { AuthChangeEvent, AuthSession, createClient, Session, SupabaseClient, User} from '@supabase/supabase-js';
 import { environment } from 'src/environments/environment';
-import {
-  BudgetAlertClass,
-  BudgetPercentage,
-  CategoryType,
-  UserRoles,
-} from '../../models-interface/enums';
-import { Router } from '@angular/router';
+import { BudgetAlertClass, BudgetPercentage, UserRoles} from '../../models-interface/enums';
 import { Subject } from 'rxjs';
 
 export interface Profile {
@@ -54,7 +41,7 @@ export class SupabaseService {
       const user_meta = (await this.profile(user)).data;
       const userComplete = { ...user, user_meta };
       return userComplete;
-    }else{
+    } else {
       return user;
     }
   }
@@ -71,55 +58,64 @@ export class SupabaseService {
   ) {
     this.supabase.auth.onAuthStateChange((event, session) => {
       callback(event, session);
+      // console.log('eventoo', event);
+      // console.log('session', session);
       // Emitir el valor de event al observable
       this.eventSubject.next(event);
     });
   }
 
   async loginWithPassword(email: string, pass: string) {
-      if (!email || !pass) throw new Error('El correo y password son obligatorios');
-      let { data, error } = await this.supabase.auth.signInWithPassword({
-        email,
-        password: pass,
-      });
-      if (error){ 
-        console.log(`Error: ${error.message}`)
-        throw new Error(`Ha ocurrido un error al momento del logueo.`);
+    if (!email || !pass)
+      throw new Error('El correo y password son obligatorios');
+    let { data, error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password: pass,
+    });
+    if (error) {
+      console.log(`Error: ${error.message}`);
+      throw new Error(`Ha ocurrido un error al momento del logueo.`);
     }
-    let userLogged :any = {
+    let userLogged: any = {
       session: data.session,
       user: data.user,
-      profile : data.user ? (await this.profile(data.user)).data : null
-    }
-      return { userLogged, error };
+      profile: data.user ? (await this.profile(data.user)).data : null,
+    };
+    return { userLogged, error };
   }
   loginWithOtp(email: string) {
-      if (!email) throw new Error('El correo y password son obligatorios');
-      return this.supabase.auth.signInWithOtp({ email });
+    if (!email) throw new Error('El correo y password son obligatorios');
+    return this.supabase.auth.signInWithOtp({ 
+      email, 
+      options: {
+      emailRedirectTo: `${environment.baseUrl}intranet/movimientos`,
+    } });
   }
   async signUp(email: string, pass: string) {
-      if (!email || !pass) throw new Error('El correo y password son obligatorios');
+    if (!email || !pass)
+      throw new Error('El correo y password son obligatorios');
 
-      let { data, error } = await this.supabase.auth.signUp({
-        email,
-        password: pass,
-        options: {
-          data: {
-            role: UserRoles.Admin
-          },
-          emailRedirectTo: `${environment.baseUrl}login`,
+    let { data, error } = await this.supabase.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        emailRedirectTo: `${environment.baseUrl}login`,
+        data: {
+          role: UserRoles.Normal,
         },
-      });
-      if (error){ 
-        console.log(`Error: ${error.message}`)
-        throw new Error(`Ha ocurrido un error al momento de crear el usuario.`);
+      },
+    });
+    if (error) {
+      console.log(`Error: ${error.message}`);
+      throw new Error(`Ha ocurrido un error al momento de crear el usuario.`);
     }
-      if (!error && data.user) {
-        await this.createProfile(data.user.id).then((resp:any) => {
-          if (resp.error) throw new Error('Ha ocurrido algun error al crear el perfil');
-        });
-      }
-      return { data, error };
+    if (!error && data.user) {
+      await this.createProfile(data.user.id).then((resp: any) => {
+        if (resp.error)
+          throw new Error('Ha ocurrido algun error al crear el perfil');
+      });
+    }
+    return { data, error };
   }
   async sendConfirmationEmail(email: string) {
     const { data, error } = await this.supabase.auth.resend({
@@ -134,14 +130,16 @@ export class SupabaseService {
     try {
       if (!user_uuid) throw new Error('El id del usuario es obligatorio');
       const { data, error } = await this.supabase
-      .from('profiles')
-      .insert({ id: user_uuid, role: UserRoles.Admin })
-      .select();
-      if (error){ 
-        console.log(`Error: ${error.message}`)
-        throw new Error(`Ha ocurrido un error al momento de crear el perfil del usuario.`);
-    }
-    return { data, error };
+        .from('profiles')
+        .insert({ id: user_uuid, role: UserRoles.Normal })
+        .select();
+      if (error) {
+        console.log(`Error: ${error.message}`);
+        throw new Error(
+          `Ha ocurrido un error al momento de crear el perfil del usuario.`,
+        );
+      }
+      return { data, error };
     } catch (error) {
       console.warn(error);
       return error;
@@ -163,32 +161,35 @@ export class SupabaseService {
     return this.supabase.storage.from('avatars').upload(filePath, file);
   }
   async requestResetPass(email: string) {
-
-      if (!email) throw new Error('El email del usuario es obligatorio');
-      const { data, error } = await this.supabase.auth.resetPasswordForEmail(
-        email
+    if (!email) throw new Error('El email del usuario es obligatorio');
+    const { data, error } = await this.supabase.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: `${environment.baseUrl}reset-password`,
+      },
+    );
+    if (error) {
+      console.log(`Error: ${error.message}`);
+      throw new Error(
+        `Ha ocurrido un error al momento de solicitar el reseteo del password.`,
       );
-      if (error){ 
-        console.log(`Error: ${error.message}`)
-        throw new Error(`Ha ocurrido un error al momento de solicitar el reseteo del password.`);
     }
-      return {data, error}
+    return { data, error };
   }
 
-async chancgeRoleUser (user_uuid:string){
-  const user = await this.supabase.auth.updateUser({
-    data: { role: 'world' }
-  })
+  async chancgeRoleUser(user_uuid: string) {
+    const user = await this.supabase.auth.updateUser({
+      data: { role: 'world' },
+    });
 
+    const profile = await this.supabase
+      .from('profiles')
+      .update({ role: 'world' })
+      .eq('id', user_uuid)
+      .select();
 
-  const profile = await this.supabase
-  .from('profiles')
-  .update({ role: 'world' })
-  .eq('id', user_uuid)
-  .select()
-
-  return { user, profile}
-}
+    return { user, profile };
+  }
 
   async resetPassword(password: string) {
     try {
@@ -196,13 +197,15 @@ async chancgeRoleUser (user_uuid:string){
       const { data, error } = await this.supabase.auth.updateUser({
         password,
       });
-      if (error){ 
-        console.log(`Error: ${error.message}`)
-        throw new Error(`Ha ocurrido un error al momento de reseteo de password.`);
-    }
-      return {data, error}
+      if (error) {
+        console.log(`Error: ${error.message}`);
+        throw new Error(
+          `Ha ocurrido un error al momento de reseteo de password.`,
+        );
+      }
+      return { data, error };
     } catch (error) {
-            console.warn(error);
+      console.warn(error);
       return error;
     }
   }
@@ -641,7 +644,9 @@ async chancgeRoleUser (user_uuid:string){
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
       const day = 1;
-      const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
+      const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day
+        .toString()
+        .padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
 
       const { data: budgets, error } = await this.supabase
         .from('budgets')

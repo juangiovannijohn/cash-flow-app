@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:4200/',
+  // baseUrl: 'http://localhost:4200/#/',
+  baseUrl: 'http://devcashflow.icornio.com/#/',
 
   // local
   // supabaseUrl: 'http://localhost:54321',

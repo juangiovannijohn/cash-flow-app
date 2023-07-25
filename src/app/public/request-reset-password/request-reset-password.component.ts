@@ -22,24 +22,33 @@ export class RequestResetPasswordComponent {
     private readonly supabase: SupabaseService,
     private readonly formBuilder: FormBuilder) { }
 
-  requestNewPass(){
+  async requestNewPass(){
     if (this.requestForm.valid && this.requestForm.value.email) {
       const email = this.requestForm.value.email;
-      this.supabase.requestResetPass(email).then(resp=>{
-        if (resp.error) {
-          this.openAlert('text-red', 'Error al enviar correo de recuperación de password, comunicarse con el administrador')
-        }else{
-          this.openAlert('text-accent', 'Correo de recuperación enviado correctamente, revise su casilla.')
-          this.router.navigate(['login'], { queryParams: { 'req-reset-pass' : 1}});
-        }
-      })
-      .catch(error => {
-        this.openAlert('text-red', `${error}`)
-      })
-      // Restablecer los valores y el estado del formulario
-      this.requestForm.patchValue({
-      email: ''
-      });
+      try {
+        this.loading= true
+        this.supabase.requestResetPass(email).then(resp=>{
+          if (resp.error) {
+            this.openAlert('text-red', 'Error al enviar correo de recuperación de password, comunicarse con el administrador')
+          }else{
+            this.openAlert('text-accent', 'Correo de recuperación enviado correctamente, revise su casilla.')
+            this.router.navigate(['login'], { queryParams: { 'req-reset-pass' : 1}});
+          }
+        })
+        .catch(error => {
+          this.openAlert('text-red', `${error}`)
+        })
+        // Restablecer los valores y el estado del formulario
+        this.requestForm.patchValue({
+        email: ''
+        });
+      } catch (error) {
+        this.openAlert('text-red', `${error}`);
+        this.requestForm.reset();
+      }finally{
+        this.loading= false
+      }
+
     }
   }
   openAlert(className:string, message:string){
