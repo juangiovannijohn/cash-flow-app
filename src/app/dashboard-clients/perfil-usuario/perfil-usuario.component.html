@@ -41,13 +41,16 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
       <!-- GASTOS -->
       <div class="">
-        <h3 class="text-lg text-start font-semibold text-text mb-2">Gastos</h3>
+        <div class=" mb-2 min-h-[50px]">
+          <h3 class="text-lg text-start font-semibold text-text ">Gastos</h3>
+          <p class="text-text font-light uppercase opacity-70 text-xs"> Presupuesto total: {{totalBudgetExpenses |ARS}}</p>
+        </div>
         <!-- Nueva Categoría -->
         <div
           class="bg-accent bg-opacity-80 text-backg p-2 rounded-md mb-2 hover:bg-opacity-100 hover:cursor-pointer ease-in-out duration-200">
           <div (click)="showFormNewExpense = !showFormNewExpense">
             <h4
-              class="text-base text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
+              class="text-sm text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
               Nueva Categoria
             </h4>
           </div>
@@ -55,9 +58,9 @@
             <form class="grid grid-cols-1" [formGroup]="categoryExpensesForm" (ngSubmit)="createCategoryExpense()">
               <div>
                 <div class="grid grid-cols-4">
-                  <label class=" col-span-2 mb-1" for="category_name">Nombre Categoría</label>
-                  <input class="bg-backg col-span-2  rounded-sm p-1 w-full text-text text-opacity-50 mb-2" type="text"
-                    id="category_name" formControlName="category_name" placeholder="Alimentos" />
+                  <label class="text-sm  col-span-2 mb-1" for="category_name">Nombre Categoría</label>
+                  <input class="bg-backg text-sm col-span-2  rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                    type="text" id="category_name" formControlName="category_name" placeholder="Ej: Alimentos" />
                 </div>
                 <div *ngIf="
                     categoryExpensesForm.get('category_name')?.invalid &&
@@ -69,10 +72,10 @@
               </div>
               <div>
                 <div class="grid grid-cols-4">
-                  <label class="mb-1 col-span-2" for="category_expense_description">Descripción</label>
-                  <textarea class="bg-backg col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2" name=""
-                    cols="30" rows="3" id="category_expense_description" formControlName="category_expense_description"
-                    placeholder="Solo lo comprado en supermercado"></textarea>
+                  <label class="text-sm mb-1 col-span-2" for="category_expense_description">Descripción</label>
+                  <textarea class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                    name="" cols="30" rows="3" id="category_expense_description"
+                    formControlName="category_expense_description" placeholder=""></textarea>
                 </div>
                 <div *ngIf="
                     categoryExpensesForm.get('category_expense_description')
@@ -84,9 +87,9 @@
 
               <div>
                 <div class="grid grid-cols-4">
-                  <label class="mb-1 col-span-2" for="budget_amount">Monto asignado a gastar</label>
-                  <input class="bg-backg col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2" type="number"
-                    id="budget_amount" formControlName="budget_amount" placeholder="$40000" />
+                  <label class="text-sm mb-1 col-span-2" for="budget_amount">Monto asignado a gastar</label>
+                  <input class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                    type="number" id="budget_amount" formControlName="budget_amount" placeholder="$40000" />
                 </div>
                 <div *ngIf="categoryExpensesForm.get('budget_amount')?.invalid" class="text-red">
                   Error.
@@ -108,9 +111,9 @@
           <div class="bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 hover:cursor-pointer ease-in-out duration-200">
             <div (click)="catExp.showDetails = !catExp.showDetails">
               <h4
-                class="text-base text-start font-semibold text-accent mb-2 uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
+                class="text-sm text-start font-semibold text-accent mb-2 uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
                 {{ catExp.category_name }}
-                <span class="text-text font-light opacity-70 text-sm" *ngIf="catExp.budget_expected !== null">({{
+                <span class="text-text font-light opacity-70 text-xs" *ngIf="catExp.budget_expected !== null">({{
                   catExp.budget_expected | ARS }})</span>
               </h4>
               <p [ngClass]="{ hidden: catExp.showDetails }" class="text-sm text-start">
@@ -119,25 +122,26 @@
             </div>
             <div [ngClass]="{ hidden: !catExp.showDetails }">
               <div class="mb-2 grid grid-cols-4">
-                <label class="col-span-2" for="">Nombre categoría</label>
-                <input class=" col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name="" type="text"
-                  required [(ngModel)]="catExp.category_name" />
+                <label class="text-sm col-span-2" for="">Nombre categoría</label>
+                <input class=" text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+                  type="text" required [(ngModel)]="catExp.category_name" />
               </div>
               <div class="mb-2 grid grid-cols-4">
-                <label class="col-span-2" for="">Descripción</label>
-                <textarea class=" col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name="" cols="30"
-                  rows="3" [(ngModel)]="catExp.category_expense_description"></textarea>
+                <label class="text-sm col-span-2" for="">Descripción</label>
+                <textarea class=" text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+                  cols="30" rows="3" [(ngModel)]="catExp.category_expense_description"></textarea>
               </div>
               <div class="mb-2 grid grid-cols-4">
-                <label class="col-span-2" for="budget_amount">Monto presupuestado</label>
-                <input class=" col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50 mb-2" type="number"
-                  id="budget_amount" [(ngModel)]="catExp.budget_expected" />
+                <label class="text-sm col-span-2" for="budget_amount">Monto presupuestado</label>
+                <input class=" text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                  type="number" id="budget_amount" [(ngModel)]="catExp.budget_expected" />
                 <div *ngIf="categoryExpensesForm.get('budget_amount')?.invalid" class="text-red">
                   Error.
                 </div>
               </div>
               <div class="flex flex-row justify-between">
-                <button class="bg-primary py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+                <button
+                  class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg"
                   (click)="
                     updateCategoryExpense(
                       catExp.id,
@@ -164,15 +168,18 @@
 
       <!-- INGRESOS -->
       <div class="">
+        <div class=" mb-2 min-h-[50px]">
         <h3 class="text-lg text-start font-semibold text-text mb-2">
           Ingresos
         </h3>
+        <p class="text-text font-light uppercase opacity-70 text-xs"> </p>
+      </div>
         <!-- Nueva Categoría -->
         <div
           class="bg-accent bg-opacity-80 text-backg p-2 rounded-md mb-2 hover:bg-opacity-100 hover:cursor-pointer ease-in-out duration-200">
           <div (click)="showFormNewIncome = !showFormNewIncome">
             <h4
-              class="text-base text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
+              class="text-sm text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
               Nueva Categoria
             </h4>
           </div>
@@ -180,9 +187,9 @@
             <form class="grid grid-cols-1" [formGroup]="categoryIncomeForm" (ngSubmit)="createCategoryIncome()">
               <div>
                 <div class="grid grid-cols-4">
-                  <label class="col-span-2" for="category_name">Nombre Categoría</label>
-                  <input class="bg-backg rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2" type="text"
-                    id="category_name" formControlName="category_name" placeholder="Sueldo" />
+                  <label class="text-sm col-span-2" for="category_name">Nombre Categoría</label>
+                  <input class="bg-backg text-sm rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2"
+                    type="text" id="category_name" formControlName="category_name" placeholder="Ej: Sueldo" />
                 </div>
                 <div *ngIf="
                   categoryIncomeForm.get('category_name')?.invalid &&
@@ -193,10 +200,10 @@
               </div>
               <div>
                 <div class="grid grid-cols-4">
-                  <label class="col-span-2" for="category_income_description">Descripción</label>
-                  <textarea class="bg-backg rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2" name=""
-                    cols="30" rows="3" id="category_income_description" formControlName="category_income_description"
-                    placeholder="Solo lo comprado en supermercado"></textarea>
+                  <label class="text-sm col-span-2" for="category_income_description">Descripción</label>
+                  <textarea class="bg-backg text-sm rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2"
+                    name="" cols="30" rows="3" id="category_income_description"
+                    formControlName="category_income_description" placeholder=""></textarea>
                 </div>
                 <div *ngIf="
                   categoryIncomeForm.get('category_income_description')?.invalid
@@ -218,26 +225,27 @@
           <div class="bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 hover:cursor-pointer ease-in-out duration-200">
             <div (click)="catInc.showDetails = !catInc.showDetails">
               <h4
-                class="text-base text-start font-semibold text-accent mb-2 uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
+                class="text-sm text-start font-semibold text-accent mb-2 uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
                 {{ catInc.category_name }}
               </h4>
-              <p [ngClass]="{ hidden: catInc.showDetails }" class="text-sm text-start">
+              <p [ngClass]="{ hidden: catInc.showDetails }" class="text-sx text-start">
                 {{ catInc.category_income_description }}
               </p>
             </div>
             <div [ngClass]="{ hidden: !catInc.showDetails }">
               <div class="mb-2 grid grid-cols-4">
-                <label class="col-span-2" for="">Nombre categoría</label>
-                <input class="bg-backg col-span-2 rounded-sm p-1 w-full text-text text-opacity-50" name="" type="text"
-                  required [(ngModel)]="catInc.category_name" />
+                <label class="text-sm col-span-2" for="">Nombre categoría</label>
+                <input class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50" name=""
+                  type="text" required [(ngModel)]="catInc.category_name" />
               </div>
               <div class="mb-2  grid grid-cols-4">
-                <label class="col-span-2" for="">Descripción</label>
-                <textarea class="bg-backg col-span-2 rounded-sm p-1 w-full text-text text-opacity-50" name="" cols="30"
-                  rows="3" [(ngModel)]="catInc.category_income_description"></textarea>
+                <label class="text-sm col-span-2" for="">Descripción</label>
+                <textarea class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50" name=""
+                  cols="30" rows="3" [(ngModel)]="catInc.category_income_description"></textarea>
               </div>
               <div class="flex flex-row justify-between">
-                <button class="bg-primary py-1 px-1 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+                <button
+                  class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg"
                   (click)="
                     updateCategoryIncome(
                       catInc.id,
@@ -251,10 +259,10 @@
                   (click)="openModal()">
                   Borrar
                 </button>
-                <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'" (confirmed)="deleteCategory(catInc.id, false)" (cancelled)="closeModal()"
-                  *ngIf="showModal">
+                <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'"
+                  (confirmed)="deleteCategory(catInc.id, false)" (cancelled)="closeModal()" *ngIf="showModal">
                 </app-confirm-delete-category>
-                
+
 
               </div>
             </div>
@@ -264,6 +272,6 @@
     </div>
   </div>
   <!-- Alert -->
-  <app-alert-message-modal [message]="messageModal"  [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlert">
+  <app-alert-message-modal [message]="messageModal" [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlert">
   </app-alert-message-modal>
 </div>

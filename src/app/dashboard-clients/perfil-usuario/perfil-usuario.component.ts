@@ -27,6 +27,7 @@ export class PerfilUsuarioComponent implements OnInit {
   showAlert: boolean = false;
   classesModal: string = '';
   messageModal: string = '';
+  totalBudgetExpenses:number = 0
 
   constructor(private readonly supabase: SupabaseService, private formBuilder: FormBuilder, private router: Router, private route: ActivatedRoute) {
     this.updateProfileForm = this.formBuilder.group({
@@ -104,7 +105,12 @@ export class PerfilUsuarioComponent implements OnInit {
       if (resp.error) {
         console.warn(resp.error)
       } else {
-        this.categoriesExpenses = resp.category_expense_view
+        this.categoriesExpenses = resp.category_expense_view;
+        let budgetAmount = 0
+        const amount = resp.category_expense_view?.map(item=>{
+          budgetAmount += item['budget_expected'] ? item['budget_expected'] : 0
+        });
+        this.totalBudgetExpenses = budgetAmount
       }
     })
     //ingresos
@@ -112,7 +118,7 @@ export class PerfilUsuarioComponent implements OnInit {
       if (resp.error) {
         console.warn(resp.error)
       } else {
-        this.categoriesIncomes = resp.category_income
+        this.categoriesIncomes = resp.category_income;
       }
     })
   }

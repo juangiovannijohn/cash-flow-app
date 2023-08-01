@@ -317,7 +317,7 @@ export class SupabaseService {
     category_name: string,
     user_uuid: string,
     category_expense_description: string,
-    budget_amount?: number,
+    budget_amount: number,
   ) {
     let budget_id;
     try {
@@ -342,7 +342,7 @@ export class SupabaseService {
 
       budget_id = data[0]['id'];
       //Si se crea la categoria correctamente y se agrega un monto al budget
-      if (budget_amount && budget_amount > 0) {
+      if (budget_amount >= 0) {
         const date = new Date();
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
@@ -670,4 +670,80 @@ export class SupabaseService {
       return { error: error.message };
     }
   }
+  // //Estado de Perdidas y Ganancias
+  async getGananciasPerdidasExpenses(user_uuid: string, month?:number, year?:number) {
+    const currentDate = new Date();
+    const currentYear = year? year :  currentDate.getFullYear();
+    const currentMonth = month? month: currentDate.getMonth() + 1;
+  
+    // Primero, obtenemos la información de la tabla category_expense
+    const { data: categoryData, error: categoryError } = await this.supabase
+      .from('budgets_view')
+      .select('category_id, category_name, user_uuid, budget_expected')
+      .eq('user_uuid', user_uuid);
+  
+    // Luego, obtenemos la información relacionada de la tabla expenses
+    const { data: expensesData, error: expensesError } = await this.supabase
+      .from('expenses')
+      .select('category_expense_id, expense_date, expense_amount, user_uuid')
+      .eq('user_uuid', user_uuid)
+      .gte('expense_date', `${currentYear}-${currentMonth}-01`)
+      .lt('expense_date', `${currentYear}-${currentMonth + 1}-01`);;
+  
+    // Ahora combinamos los resultados usando el user_uuid como clave
+    const gananciasPerdidasData = categoryData?.map((category) => {
+      let sum:number= 0;
+      const relatedExpenses = expensesData?.filter(
+        
+        (expense) => {
+          if (expense.category_expense_id === category.category_id) {
+            sum += expense.expense_amount;
+            return true
+          } else {
+            return false
+          }}
+      );
+      return { ...category, data: relatedExpenses, sum };
+    });
+  
+    return { data: gananciasPerdidasData, error: categoryError || expensesError };
+  }
+  async getGananciasPerdidasIncomes(user_uuid: string, month?:number, year?:number) {
+    const currentDate = new Date();
+    const currentYear = year? year :  currentDate.getFullYear();
+    const currentMonth = month? month: currentDate.getMonth() + 1;
+  
+    // Primero, obtenemos la información de la tabla category_expense
+    const { data: categoryData, error: categoryError } = await this.supabase
+      .from('category_income')
+      .select('id, category_name, user_uuid')
+      .eq('user_uuid', user_uuid);
+  
+    // Luego, obtenemos la información relacionada de la tabla expenses
+    const { data: incomeData, error: expensesError } = await this.supabase
+      .from('income')
+      .select('category_income_id, income_date, income_amount, user_uuid')
+      .eq('user_uuid', user_uuid)
+      .gte('income_date', `${currentYear}-${currentMonth}-01`)
+      .lt('income_date', `${currentYear}-${currentMonth + 1}-01`);;
+  
+    // Ahora combinamos los resultados usando el user_uuid como clave
+    const gananciasPerdidasData = categoryData?.map((category) => {
+      let sum:number= 0;
+      const relatedIncome = incomeData?.filter(
+        
+        (income) => {
+          if (income.category_income_id === category.id) {
+            sum += income.income_amount;
+            return true
+          } else {
+            return false
+          }}
+      );
+      return { ...category, data: relatedIncome, sum };
+    });
+  
+    return { data: gananciasPerdidasData, error: categoryError || expensesError };
+  }
+  
 }
