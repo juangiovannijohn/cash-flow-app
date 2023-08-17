@@ -18,11 +18,13 @@
         <!-- Resumen en tabla -->
         <div class="">
           <div class="grid grid-cols-3">
-            <p class="col-span-2 text-text/90 text-xs  font-semibold sm:uppercase mb-1">Descripción</p>
+            <p class="col-span-1 text-text/90 text-xs  font-semibold sm:uppercase mb-1">Descripción</p>
+            <p class="col-span-1 text-text/90 text-xs  font-semibold sm:uppercase mb-1">Previsto</p>
             <p class="text-text/90 col-span-1 text-xs  font-semibold sm:uppercase mb-1">Flujo</p>
             <ng-container *ngFor="let income of GPIncomes">
-              <p class="text-text/80 col-span-2 text-xs">{{income.category_name}}</p>
-              <p class="col-span-1 text-text/80 text-xs">{{income.sum | ARS}}</p>
+              <p class="text-text/80 col-span-1 text-xs">{{income.category_name}}</p>
+              <p class="col-span-1 text-text/80 text-xs">{{income.budget_expected | ARS}}</p>
+              <p [ngClass]="income.sum > income.budget_expected ? 'text-red/80':'text-text/80'" class="col-span-1 text-xs">{{income.sum | ARS}}</p>
             </ng-container>
           </div>
         </div>
@@ -84,19 +86,17 @@
           <div class="flex flex-col gap-0 mb-3 p-1">
 
             <!-- Resumen en tabla -->
-            <div class="grid grid-cols-3 gap-1 sm:gap-2">
+            <!-- <div class="grid grid-cols-3 gap-1 sm:gap-2">
               <p class="text-text/90 col-span-1 text-xs font-semibold sm:uppercase">Descripcion</p>
               <p class="col-span-1 text-text/90 text-xs font-semibold sm:uppercase">Valor Actualizado</p>
               <p class="col-span-1 text-text/90 text-xs font-semibold sm:uppercase">Ingresos Pasivos</p>
               <ng-container>
 
-                <p class="text-accent/70 col-span-1 text-xs sm:text-xs">Próximamente</p>
-                <p class="col-span-1 text-accent/70 text-xs sm:text-xs">$..............</p>
-                <p class="col-span-1 text-accent/70 text-xs sm:text-xs">$..............</p>
-  
-
+                <p class="text-accent/70 col-span-1 text-xs sm:text-xs"></p>
+                <p class="col-span-1 text-accent/70 text-xs sm:text-xs"></p>
+                <p class="col-span-1 text-accent/70 text-xs sm:text-xs"></p>
               </ng-container>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -112,17 +112,16 @@
         <div class="relative">
           <div class="flex flex-col gap-0 mb-3 p-1">
             <!-- Resumen en tabla -->
-            <div class="grid grid-cols-3 gap-1">
+            <!-- <div class="grid grid-cols-3 gap-1">
               <p class="text-text/90 col-span-1 text-xs  font-semibold sm:uppercase">Descripción</p>
               <p class="col-span-1 text-text/90 text-xs  font-semibold sm:uppercase">Deuda Restante Actualizada</p>
               <p class="col-span-1 text-text/90 text-xs  font-semibold sm:uppercase">Cuota mensual</p>
               <ng-container>
-                <p class="text-accent/70 col-span-1 text-xs sm:text-xs">Próximamente</p>
-                <p class="col-span-1 text-accent/70 text-xs sm:text-xs">$..............</p>
-                <p class="col-span-1 text-accent/70 text-xs sm:text-xs">$..............</p>
-
+                <p class="text-accent/70 col-span-1 text-xs sm:text-xs"></p>
+                <p class="col-span-1 text-accent/70 text-xs sm:text-xs"></p>
+                <p class="col-span-1 text-accent/70 text-xs sm:text-xs"></p>
               </ng-container>
-            </div>
+            </div> -->
           </div>
         </div>
 

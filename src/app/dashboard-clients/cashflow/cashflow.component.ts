@@ -105,6 +105,7 @@ export interface GPIncomesDatum {
   id:            number;
   category_name: string;
   user_uuid:     string;
+  budget_expected: number;
   data:          DatumDatum[];
   sum:           number;
 }

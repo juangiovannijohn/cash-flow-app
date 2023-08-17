@@ -1,0 +1,228 @@
+<!-- Presupuestos anteriores -->
+<div class="mt-2">
+  <div class="grid grid-cols-1 gap-2 sm:gap-3">
+    <div [ngClass]="rowTitle ? 'mb-2 min-h-[50px]' : ''" >
+      <div (click)="rowTitle = !rowTitle"
+        class="flex flex-row justify-start cursor-pointer items-center mb-2 hover:gap-1">
+        <h3 class="inline-block text-lg text-start font-semibold text-accent mr-1">
+          Mis categorías
+        </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          [ngClass]="rowTitle ? 'rotate-90' : ''" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </div>
+      <div [ngClass]="{ hidden: !rowTitle }">
+        <!-- Categorias de gastos -->
+        <div
+          class="flex flex-row justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <div class="min-w-[15%] mr-3">
+            <h4 class="text-text text-base">Gastos</h4>
+            <button (click)="showFormNewExpense = !showFormNewExpense"
+              class="bg-gris text-accent border text-xs px-2 py-1 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
+              Nueva categoría
+            </button>
+          </div>
+          <div class="flex flex-row flex-wrap justify-start gap-1 w-full">
+            <ng-container *ngFor="let expense of categoriesExpenses">
+              <div>
+                <button (click)="
+                    selectCategory(
+                      expense.id,
+                      expense.category_name,
+                      expense.category_expense_description,
+                      true
+                    )
+                  "
+                  class="inline-block px-2 rounded-full bg-gris text-accent border opacity-60 hover:opacity-100 text-xs hover:bg-accent hover:shadow-md hover:text-backg leading-relaxed hover:cursor-pointer">
+                  {{ expense.category_name }}
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <!-- Nueva categoria de gastos -->
+        <div [ngClass]="{ hidden: !showFormNewExpense }"
+          class="flex flex-row justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <form class="grid grid-cols-1" [formGroup]="categoryExpensesForm" (ngSubmit)="createCategoryExpense()">
+            <div>
+              <div class="grid grid-cols-4">
+                <label class="text-sm col-span-2 mb-1" for="category_name">Nombre Categoría</label>
+                <input class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                  type="text" id="category_name" formControlName="category_name" placeholder="Ej: Alimentos" />
+              </div>
+              <div *ngIf="
+                  categoryExpensesForm.get('category_name')?.invalid &&
+                  categoryExpensesForm.get('category_name')?.touched
+                " class="text-red">
+                Error.
+              </div>
+            </div>
+            <div>
+              <div class="grid grid-cols-4">
+                <label class="text-sm mb-1 col-span-2" for="category_expense_description">Descripción</label>
+                <textarea class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
+                  name="" cols="30" rows="3" id="category_expense_description"
+                  formControlName="category_expense_description" placeholder=""></textarea>
+              </div>
+              <div *ngIf="
+                  categoryExpensesForm.get('category_expense_description')
+                    ?.invalid
+                " class="text-red">
+                Error.
+              </div>
+            </div>
+            <div>
+              <div class="flex flex-row justify-start">
+                <button [ngClass]="{ 'opacity-60': !categoryExpensesForm.valid }" type="submit"
+                  class="bg-text py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200 text-backg">
+                  Crear categoría
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- Actualicar categoria de gastos -->
+        <div [ngClass]="{ hidden: !showFormEditExpense }"
+          class="flex flex-col justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <h4 class="text-accent text-base">Editar</h4>
+          <div class="mb-2 grid grid-cols-4">
+            <label class="text-sm col-span-2" for="">Nombre categoría</label>
+            <input class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+              type="text" required [(ngModel)]="selectedCatName" />
+          </div>
+          <div class="mb-2 grid grid-cols-4">
+            <label class="text-sm col-span-2" for="">Descripción</label>
+            <textarea class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+              cols="30" rows="3" [(ngModel)]="selectedCatDescription"></textarea>
+          </div>
+          <div class="flex flex-row justify-between">
+            <button
+              class="bg-gris text-accent border opacity-60 hover:opacity-100 text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg"
+              (click)="
+                updateCategoryExpense(
+                  selectedCatId,
+                  selectedCatName,
+                  selectedCatDescription
+                )
+              ">
+              Actualizar
+            </button>
+            <button class="text-red py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+              (click)="openModal()">
+              Borrar
+            </button>
+            <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'"
+              (confirmed)="deleteCategory(selectedCatId, true)" (cancelled)="closeModal()" *ngIf="showModal">
+            </app-confirm-delete-category>
+          </div>
+        </div>
+        <!-- Categorias de ingresos -->
+        <div
+          class="flex flex-row justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <div class="min-w-[15%] mr-3">
+            <h4 class="text-text text-base">Ingresos</h4>
+            <button (click)="showFormNewIncome = !showFormNewIncome"
+              class="bg-gris text-accent border text-xs px-2 py-1 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
+              Nueva categoría
+            </button>
+          </div>
+          <div class="flex flex-row flex-wrap justify-start gap-1 w-full">
+            <ng-container *ngFor="let income of categoriesIncomes">
+              <div>
+                <button (click)="
+                    selectCategory(
+                      income.id,
+                      income.category_name,
+                      income.category_income_description,
+                      false
+                    )
+                  "
+                  class="inline-block px-2 rounded-full bg-gris text-accent border opacity-60 hover:opacity-100 text-xs hover:bg-accent hover:shadow-md hover:text-backg leading-relaxed hover:cursor-pointer">
+                  {{ income.category_name }}
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Nueva categoria de ingresos -->
+        <div [ngClass]="{ hidden: !showFormNewIncome }"
+          class="flex flex-row justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <form class="grid grid-cols-1" [formGroup]="categoryIncomeForm" (ngSubmit)="createCategoryIncome()">
+            <div>
+              <div class="grid grid-cols-4">
+                <label class="text-sm col-span-2" for="category_name">Nombre Categoría</label>
+                <input class="bg-backg text-sm rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2"
+                  type="text" id="category_name" formControlName="category_name" placeholder="Ej: Sueldo" />
+              </div>
+              <div *ngIf="
+                  categoryIncomeForm.get('category_name')?.invalid &&
+                  categoryIncomeForm.get('category_name')?.touched
+                " class="text-red">
+                Error.
+              </div>
+            </div>
+            <div>
+              <div class="grid grid-cols-4">
+                <label class="text-sm col-span-2" for="category_income_description">Descripción</label>
+                <textarea class="bg-backg text-sm rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2"
+                  name="" cols="30" rows="3" id="category_income_description"
+                  formControlName="category_income_description" placeholder=""></textarea>
+              </div>
+              <div *ngIf="
+                  categoryIncomeForm.get('category_income_description')?.invalid
+                " class="text-red">
+                Error.
+              </div>
+            </div>
+            <div class="flex flex-row justify-start">
+              <button [ngClass]="{ 'opacity-60': !categoryIncomeForm.valid }" type="submit"
+                class="bg-text py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200 text-backg">
+                Crear categoría
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- Actualizar categoria de ingresos -->
+        <div [ngClass]="{ hidden: !showFormEditIncome }"
+          class="flex flex-col justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+          <h4 class="text-accent text-base">Editar</h4>
+          <div class="mb-2 grid grid-cols-4">
+            <label class="text-sm col-span-2" for="">Nombre categoría</label>
+            <input class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+              type="text" required [(ngModel)]="selectedCatName" />
+          </div>
+          <div class="mb-2 grid grid-cols-4">
+            <label class="text-sm col-span-2" for="">Descripción</label>
+            <textarea class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50" name=""
+              cols="30" rows="3" [(ngModel)]="selectedCatDescription"></textarea>
+          </div>
+          <div class="flex flex-row justify-between">
+            <button
+              class="bg-gris text-accent border opacity-60 hover:opacity-100 text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg"
+              (click)="
+              updateCategoryIncome(
+                  selectedCatId,
+                  selectedCatName,
+                  selectedCatDescription
+                )
+              ">
+              Actualizar
+            </button>
+            <button class="text-red py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+              (click)="openModal()">
+              Borrar
+            </button>
+            <app-confirm-delete-category [message]="'¿Seguro desea eliminar la categoría?'"
+              (confirmed)="deleteCategory(selectedCatId, false)" (cancelled)="closeModal()" *ngIf="showModal">
+            </app-confirm-delete-category>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Alert -->
+  <app-alert-message-modal [message]="messageModal" [classes]="classesModal" (close)="closeAlert()" *ngIf="showAlert">
+  </app-alert-message-modal>
+</div>
