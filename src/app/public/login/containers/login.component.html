@@ -16,8 +16,8 @@
                   placeholder="prueba@prueba.com" />
               </div>
               <div>
-                <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
-                  [disabled]="loading || showIntranet" [ngClass]="showIntranet ? 'opacity-50' : 'opacity-100' ">
+                <button [ngClass]="{ 'opacity-60': !signInForm.valid, 'opacity-100 hover:border-accent/80 hover:opacity-100 font-medium': signInForm.valid }" type="submit" class="bg-accent/10 border-2 border-accent/20 text-accent hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg  w-full ease-in-out duration-200"
+                  [disabled]="loading || showIntranet || !signInForm.valid">
                   {{ loading ? 'Enviando...' : 'Login' }}
                 </button>
               </div>
@@ -40,8 +40,8 @@
                   formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="a" />
               </div>
               <div>
-                <button type="submit" class="button w-full px-3 py-1 bg-primary hover:bg-accent rounded-md"
-                  [disabled]="loading || showIntranet" [ngClass]="showIntranet ? 'opacity-50' : 'opacity-100' ">
+                <button [ngClass]="{ 'opacity-60': !loginFormWP.valid, 'opacity-100 hover:border-accent/80 hover:opacity-100 font-medium': loginFormWP.valid }" type="submit" class="bg-accent/10 border-2 border-accent/20 text-accent hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg  w-full ease-in-out duration-200"
+                  [disabled]="loading || showIntranet || !loginFormWP.valid" >
                   {{ loading ? 'Enviando...' : 'Login pass' }}
                 </button>
               </div>

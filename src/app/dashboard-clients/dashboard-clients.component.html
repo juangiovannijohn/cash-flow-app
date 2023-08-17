@@ -12,81 +12,172 @@
             <!-- Menú principal Desktop -->
             <div class="hidden md:block md:pt-6 md:pb-0 bg-gris w-full">
 
-                    <ul class="grid grid-cols-1 gap-2">
-                        <li
-                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
-                            <a routerLink="perfil" [routerLinkActive]="['text-accent', 'font-semibold']"
-                                [routerLinkActiveOptions]="{exact: true}"
-                                class="block text-white hover:text-gray-300">Perfil</a></li>
-                        <li
-                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
-                            <a routerLink="balance" [routerLinkActive]="['text-accent', 'font-semibold']"
-                                [routerLinkActiveOptions]="{exact: true}"
-                                class="block text-white hover:text-gray-300">Balance</a></li>
-                        <li
-                            class="hover:bg-text hover:opacity-50 hover:text-primary px-4 py-1 ease-in-out duration-200">
-                            <a routerLink="movimientos" [routerLinkActive]="['text-accent', 'font-semibold']"
-                                [routerLinkActiveOptions]="{exact: true}"
-                                class="block text-white hover:text-gray-300">Movimientos</a></li>
-                        <li>
-                            <button
-                                class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-4 px-3 py-1 rounded"
-                                (click)="openModal()">
-                                Cerrar sesión
-                            </button>
-                        </li>
-                    </ul>
+                <ul class="grid grid-cols-1 gap-2">
+                    <li class="group  px-4 py-1 ease-in-out duration-200">
 
-            </div>
-            <!-- Botón de menú mobile -->
-            <!-- <div class="grid-span-1 flex justify-end align-middle sm:hidden ">
-                        <button type="button"
-                            class=" border-x border-y border-x-accent border-y-accent px-4 rounded-md text-accent"
-                            aria-label="Toggle menu" (click)="toggleMenu()">
-                            Menu
-                        </button>
-                    </div> -->
-        </div>
-        <!-- Menú mobile desplegable -->
 
-        <!-- <div class="sm:hidden" *ngIf="open">
-                <ul class="bg-gris pb-5">
-                    <li ><a routerLink="perfil" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Perfil</a></li>
-                    <li ><a  routerLink="balance" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Balance</a></li>
-                    <li ><a  routerLink="movimientos" [routerLinkActive]="['text-accent', 'font-semibold']" [routerLinkActiveOptions]="{exact: true}" class=" px-4 py-2 block text-white ">Movimientos</a></li>
+                        <a routerLink="perfil" [ngClass]="rlaPerfil.isActive ? 'hidden' : ''"
+                        class="flex flex-row items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-5 h-5 mr-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                            <span class="text-text">Perfil</span>
+                        </a>
+
+
+                        <a routerLink="perfil" [ngClass]="rlaPerfil.isActive ? '' : 'hidden'"
+                        class=" flex flex-row items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24" fill="white" class="w-5 h-5 mr-1">
+                            <path fill-rule="evenodd"
+                                d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                                clip-rule="evenodd" />
+                        </svg>
+                            <span class="text-text font-semibold">Perfil</span>
+                        </a>
+                    </li>
+                    <li class="group  px-4 py-1 ease-in-out duration-200">
+
+
+
+                        <a routerLink="balance" [ngClass]="rlaBalance.isActive ? 'hidden' : ''"
+                            class="flex flex-row items-center">
+                            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-5 h-5 mr-1">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                            </svg>
+                            <span class="text-text">Balance</span>
+
+                        </a>
+                        <a routerLink="balance" [ngClass]="rlaBalance.isActive ? '' : 'hidden'"
+                            class=" flex flex-row items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5 mr-1">
+                                <path d="M11.625 16.5a1.875 1.875 0 100-3.75 1.875 1.875 0 000 3.75z" />
+                                <path fill-rule="evenodd"
+                                    d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zm6 16.5c.66 0 1.277-.19 1.797-.518l1.048 1.048a.75.75 0 001.06-1.06l-1.047-1.048A3.375 3.375 0 1011.625 18z"
+                                    clip-rule="evenodd" />
+                                <path
+                                    d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
+                            </svg>
+                            <span class="text-text font-semibold">Balance</span>
+
+                        </a>
+                    </li>
+                    <li class="group  px-4 py-1 ease-in-out duration-200">
+                        <a routerLink="movimientos" [ngClass]="rlaMovimientos.isActive ? 'hidden' : ''"
+                            class="flex flex-row items-center">
+                            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class=" w-5 h-5 mr-1">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-text"> Movimientos</span>
+                        </a>
+
+                        <a routerLink="movimientos" [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'"
+                            class=" flex flex-row items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class=" w-5 h-5 mr-1">
+                                <path
+                                    d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 01-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004zM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 01-.921.42z" />
+                                <path fill-rule="evenodd"
+                                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v.816a3.836 3.836 0 00-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 01-.921-.421l-.879-.66a.75.75 0 00-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 001.5 0v-.81a4.124 4.124 0 001.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 00-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 00.933-1.175l-.415-.33a3.836 3.836 0 00-1.719-.755V6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-text font-semibold"> Movimientos</span>
+                        </a>
+                    </li>
                     <li>
-                        <button class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-4 px-3 py-1 rounded" (click)="cerrarSesion()">Cerrar sesión</button>
+                        <button
+                            class="text-backg font-medium border bg-opacity-70 text-opacity-100 hover:bg-opacity-100 ease-in-out duration-200  bg-red ml-2 px-2 py-1 rounded flex flex-row"
+                            (click)="openModal()">
+                            <svg viewBox="0 0 24 24" fill="#1c1c1c" class="w-6 h-6 mr-1">
+                                <path fill-rule="evenodd"
+                                    d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span>Cerrar sesión</span>
+                        </button>
                     </li>
                 </ul>
-            </div>  -->
+
+            </div>
+
+        </div>
     </div>
-    <div class="  w-full">
+    <div class="w-full max-w-5xl mx-auto">
         <router-outlet></router-outlet>
     </div>
     <div class="bg-backg md:hidden fixed bottom-[-2px] w-full shadow-[0_0px_10px_0_rgba(0,0,0,0.1)] shadow-gris">
         <div class="py-3  w-full grid grid-cols-4">
             <a routerLink="perfil" routerLinkActive #rlaPerfil="routerLinkActive"
                 [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
-                <img class="" width="20px" height="auto" src="../../assets/img/user.png" alt="">
+                <svg [ngClass]="rlaPerfil.isActive ? 'hidden' : ''" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                <svg [ngClass]="rlaPerfil.isActive ? '' : 'hidden'" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="#4cc38a" class="w-5 h-5">
+                    <path fill-rule="evenodd"
+                        d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                        clip-rule="evenodd" />
+                </svg>
+
                 <span [ngClass]="rlaPerfil.isActive ? '' : 'hidden'" class=" text-xs text-text">Perfil</span>
             </a>
             <a routerLink="balance" routerLinkActive #rlaBalance="routerLinkActive"
                 [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
-                <img class="" width="20px" height="auto" src="../../assets/img/balance.png" alt="">
+                <svg [ngClass]="rlaBalance.isActive ? 'hidden' : ''" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="white" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+
+                <svg [ngClass]="rlaBalance.isActive ? '' : 'hidden'" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="#4cc38a" class="w-5 h-5">
+                    <path d="M11.625 16.5a1.875 1.875 0 100-3.75 1.875 1.875 0 000 3.75z" />
+                    <path fill-rule="evenodd"
+                        d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zm6 16.5c.66 0 1.277-.19 1.797-.518l1.048 1.048a.75.75 0 001.06-1.06l-1.047-1.048A3.375 3.375 0 1011.625 18z"
+                        clip-rule="evenodd" />
+                    <path
+                        d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
+                </svg>
+
                 <span [ngClass]="rlaBalance.isActive ? '' : 'hidden'" class=" text-xs text-text">Balance</span>
             </a>
             <a routerLink="movimientos" routerLinkActive #rlaMovimientos="routerLinkActive"
                 [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-start">
-                <img class="" width="20px" height="auto" src="../../assets/img/add.png" alt="">
-                <span [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'"
-                    class=" text-xs text-accent">Movimientos</span>
+
+                <svg [ngClass]="rlaMovimientos.isActive ? 'hidden' : ''" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="white" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="#4cc38a" class="w-5 h-5">
+                    <path
+                        d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 01-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004zM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 01-.921.42z" />
+                    <path fill-rule="evenodd"
+                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v.816a3.836 3.836 0 00-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 01-.921-.421l-.879-.66a.75.75 0 00-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 001.5 0v-.81a4.124 4.124 0 001.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 00-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 00.933-1.175l-.415-.33a3.836 3.836 0 00-1.719-.755V6z"
+                        clip-rule="evenodd" />
+                </svg>
+
+                <span [ngClass]="rlaMovimientos.isActive ? '' : 'hidden'" class=" text-xs text-text">Movimientos</span>
             </a>
-            <button class="flex flex-col items-center justify-start" (click)="openModal()"><img class="" width="25px"
-                    height="auto" src="../../assets/img/signout-1.png" alt=""></button>
+            <button class="flex flex-col items-center justify-start" (click)="openModal()">
+                <svg viewBox="0 0 24 24" fill="red" class="w-6 h-6 opacity-50 hover:opacity-100">
+                    <path fill-rule="evenodd"
+                        d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z"
+                        clip-rule="evenodd" />
+                </svg>
+
+            </button>
         </div>
-    
+
     </div>
     <!-- Confirm Modal -->
-    <app-confirm-delete-category [message]="'¿Seguro desea cerrar sesión?'" (confirmed)="cerrarSesion()" (cancelled)="closeModal()" *ngIf="showModal">
+    <app-confirm-delete-category [message]="'¿Seguro desea cerrar sesión?'" (confirmed)="cerrarSesion()"
+        (cancelled)="closeModal()" *ngIf="showModal">
     </app-confirm-delete-category>
 </div>

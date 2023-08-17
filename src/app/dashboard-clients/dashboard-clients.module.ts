@@ -12,6 +12,9 @@ import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.componen
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ArsPipe } from '../core/models-interface/ars.pipe';
 import { ConfirmDeleteCategoryComponent } from '../core/shared/components/confirm-delete-category/confirm-delete-category.component';
+import { MonthsPipe } from '../core/models-interface/months.pipe';
+import { OldBudgetsComponent } from './old-budgets/old-budgets.component';
+import { MyCategoriesComponent } from './my-categories/my-categories.component';
 
 
 
@@ -23,7 +26,10 @@ import { ConfirmDeleteCategoryComponent } from '../core/shared/components/confir
       DashboardClientsComponent,
       TransactionHistoryComponent,
       PerfilUsuarioComponent,
-      ArsPipe
+      ArsPipe,
+      MonthsPipe,
+      OldBudgetsComponent,
+      MyCategoriesComponent
   ],
   imports: [
     CommonModule,

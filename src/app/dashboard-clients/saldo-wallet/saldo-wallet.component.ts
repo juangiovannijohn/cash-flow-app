@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./saldo-wallet.component.css'],
 })
 export class SaldoWalletComponent implements OnInit {
+  isPremium:boolean = false;
   user: any;
   transactionsHistory: TransactionHistory[] = [];
   budgets: any[] | null = [];
@@ -34,6 +35,7 @@ export class SaldoWalletComponent implements OnInit {
       const role =  user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;  
       
       if (role == UserRoles.Normal || role == UserRoles.Premium) {
+        this.isPremium = role == UserRoles.Premium ? false : true; //Valida que el usuario sea Premium
         this.getCategories(user.id);
         this.getTransactions(user.id);
         this.getCategory(user.id);
@@ -104,7 +106,14 @@ export class SaldoWalletComponent implements OnInit {
   getCategory(user_uuid: string) {
     this.supabase.getBudgets(user_uuid).then((resp) => {
       if (!resp.error) {
-        this.budgets = resp.budgets_view;
+        const budMap = resp.budgets_view?.map((item: any) => {
+          item.noBudgetAmount = false
+          if (item.budget_expected == 0) {
+            item.noBudgetAmount = true
+          }
+          return item;
+        })
+        this.budgets = budMap? budMap : [];
       } else {
         console.warn(resp.error);
       }

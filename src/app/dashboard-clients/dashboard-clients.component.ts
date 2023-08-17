@@ -35,7 +35,6 @@ export class DashboardClientsComponent implements OnInit {
       console.log('---------------------')
     }
     this.route.queryParamMap.subscribe(param => {
-      console.log(param);
       const params = param.get('type') ? param.get('type') : '';
       switch (params) {
         case 'magiclink':

@@ -1,0 +1,35 @@
+  <!-- Presupuestos anteriores -->
+  <div class="mt-2">
+    <div class="grid grid-cols-1  gap-2 sm:gap-3">
+      <div [ngClass]="rowTitle ? 'mb-2 min-h-[50px]' : ''" >
+        <div (click)="rowTitle = !rowTitle"
+        class="flex flex-row justify-start cursor-pointer items-center mb-2 hover:gap-1">
+          <h3 class="inline-block text-lg text-start font-semibold text-accent mr-1">
+            {{title}}
+          </h3>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          [ngClass]="rowTitle ? 'rotate-90' : ''" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+        </div>
+        <div  [ngClass]="{ hidden: !rowTitle }">
+          <ng-container *ngFor="let bud of pillsCategories">
+            <div
+              class="flex flex-row flex-wrap justify-start bg-gris p-2 rounded-md mb-2 hover:bg-opacity-75 ease-in-out duration-200">
+              <div class="max-w-[15%] mr-3">
+                <span class="text-text text-base">{{ bud.year }}</span>
+              </div>
+              <div class="flex flex-row justify-start gap-1">
+                <ng-container *ngFor="let month of bud.months">
+                  <div>
+                    <button class="inline-block px-2 rounded-full bg-gris text-accent border opacity-60 hover:opacity-100 text-xs hover:bg-accent hover:shadow-md hover:text-backg leading-relaxed hover:cursor-pointer" (click)="getCategoriesOldExpenses(bud.year,month )">{{
+                      month | months }}</button>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
