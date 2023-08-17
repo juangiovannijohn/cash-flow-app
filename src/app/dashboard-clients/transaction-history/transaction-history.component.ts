@@ -29,7 +29,6 @@ export class TransactionHistoryComponent implements OnInit {
       this.transactionsService.getTransactions(this.id).subscribe({
         next: resp =>  {
           this.transactions= resp.transactions;
-          console.log('servicio historial de transacciones',resp)
         }
       })
     }
