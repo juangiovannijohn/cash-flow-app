@@ -13,6 +13,8 @@ import { BlogComponent } from './public/blog/containers/blog.component';
 import { ConfirmationUserComponent } from './public/confirmation-user/confirmation-user.component';
 import { SignupComponent } from './public/signup/signup.component';
 import { RequestResetPasswordComponent } from './public/request-reset-password/request-reset-password.component';
+import { PricingComponent } from './public/pricing/pricing.component';
+
 
 @NgModule({
   declarations: [
@@ -23,14 +25,15 @@ import { RequestResetPasswordComponent } from './public/request-reset-password/r
     ConfirmationUserComponent,
     SignupComponent,
     ResetPasswordComponent,
-    RequestResetPasswordComponent
+    RequestResetPasswordComponent,
+    PricingComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     SharedModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [ResetPasswordComponent, FormBuilder],
   bootstrap: [AppComponent,]

@@ -1,38 +1,7 @@
 <div class="bg-backg text-text w-full p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
   <!-- EDITAR PERFIL -->
-  <!-- TODO -->
-  <!-- <div class=" grid grid-cols-1 sm:grid-cols-2">
-    <div class="bg-gris  p-2 rounded-md mb-2 hover:bg-opacity-75 hover:cursor-pointer ease-in-out duration-200">
-      <h2 class="text-xl text-start font-semibold text-accent mb-2">
-        Editar perfil
-      </h2>
-      <form [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()" class="form-widget">
-
-        <div class="mb-2">
-          <label class="mb-1" for="username">Usuario</label>
-          <input class="bg-backg  rounded-sm p-1 w-full text-text text-opacity-50 mb-2" value="{{profile?.username}}" formControlName="username"
-            id="username" type="text" />
-        </div>
-        <div class="mb-2">
-          <label class="mb-1" for="full_name">Nombre</label>
-          <input class="bg-backg  rounded-sm p-1 w-full text-text text-opacity-50 mb-2" value="{{profile?.full_name}}" type="text"
-            formControlName="full_name" id="full_name" />
-        </div>
-        <div class="mb-2">
-          <label class="mb-1" for="website">Link de acceso rápido</label>
-          <input class="bg-backg   rounded-sm p-1 w-full text-text text-opacity-50 mb-2" value="{{profile?.website}}" type="url" id="website"
-            formControlName="website" />
-        </div>
-        <div class="flex flex-row justify-start">
-          <button type="submit"
-            class="bg-primary py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
-            [disabled]="loading">
-            {{ loading ? 'Loading ...' : 'Actualizar' }}
-          </button>
-        </div>
-      </form>showDetailsconfirm
-    </div>
-  </div> -->
+  <app-update-profile>
+  </app-update-profile>
   <!-- Presupuestos anteriores -->
   <app-old-budgets
   [title]="titleOldBudgets" 
@@ -63,15 +32,15 @@
           <div (click)="showFormNewExpense = !showFormNewExpense">
             <h4
               class="text-sm text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
-              Asignar gasto
+              Presupuestar gastos
             </h4>
           </div>
           <div [ngClass]="{ hidden: !showFormNewExpense }">
            
             <form class="grid grid-cols-1 mt-2" [formGroup]="budgetExpensesForm" (ngSubmit)="createBudgetExpense()">
               <div class="mb-2">
-                <label class="text-gris/90 font-medium mb-1 text-sm" for="categoria">Categoría</label>
-                <select class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " id="categoria"
+                <label class="text-gris/90 font-medium mb-1 text-sm" for="newCategoryExpense">Categoría</label>
+                <select class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " id="newCategoryExpense"
                   formControlName="category_id">
                   <option [value]="null">Seleccione</option>
                   <ng-container *ngFor="let category of categoriesExpensesNonBudgeted">
@@ -80,8 +49,8 @@
                 </select>
               </div>
               <div class="mb-2">
-                <label class="text-gris/90 font-medium mb-1 text-sm" for="monto">Monto</label>
-                <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " type="number" id="monto"
+                <label class="text-gris/90 font-medium mb-1 text-sm" for="newMontoBudgetExpense">Monto</label>
+                <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " type="number" id="newMontoBudgetExpense"
                   formControlName="budget_expected" min="0" placeholder="Ej: $1000" />
               </div>
               <div class="my-2">
@@ -113,9 +82,9 @@
             </div>
             <div [ngClass]="{ hidden: !catExp.showDetails }">
               <div class="mb-2 grid grid-cols-4">
-                <label class="text-sm col-span-2" for="budget_amount">Monto presupuestado</label>
+                <label class="text-sm col-span-2" >Monto presupuestado</label>
                 <input class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
-                  type="number" id="budget_amount" [(ngModel)]="catExp.budget_expected" />
+                  type="number"  [(ngModel)]="catExp.budget_expected" />
               </div>
               <div class="flex flex-row justify-between">
                 <button
@@ -158,15 +127,15 @@
           <div (click)="showFormNewIncome = !showFormNewIncome">
             <h4
               class="text-sm text-start font-semibold text-backg uppercase hover:underline hover:underline-offset-4 ease-in-out duration-200">
-              Asignar ingreso
+              Presupuestar ingresos
             </h4>
           </div>
           <div [ngClass]="{ hidden: !showFormNewIncome }">
            
               <form class="grid grid-cols-1 mt-2" [formGroup]="budgetIncomeForm" (ngSubmit)="createBudgetIncome()">
                 <div class="mb-2">
-                  <label class="text-gris/90 font-medium mb-1 text-sm" for="categoria">Categoría</label>
-                  <select class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " id="categoria"
+                  <label class="text-gris/90 font-medium mb-1 text-sm" >Categoría</label>
+                  <select class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " 
                     formControlName="category_id">
                     <option [value]="null">Seleccione</option>
                     <ng-container *ngFor="let category of categoriesIncomesNonBudgeted">
@@ -175,8 +144,8 @@
                   </select>
                 </div>
                 <div class="mb-2">
-                  <label class="text-gris/90 font-medium mb-1 text-sm" for="monto">Monto</label>
-                  <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " type="number" id="monto"
+                  <label class="text-gris/90 font-medium mb-1 text-sm" >Monto</label>
+                  <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 " type="number"
                     formControlName="budget_expected" min="0" placeholder="Ej: $1000" />
                 </div>
                 <div class="my-2">
@@ -206,9 +175,9 @@
             </div>
             <div [ngClass]="{ hidden: !catInc.showDetails }">
               <div class="mb-2 grid grid-cols-4">
-                <label class="text-sm col-span-2" for="budget_amount">Monto esperado</label>
+                <label class="text-sm col-span-2" >Monto esperado</label>
                 <input class="text-sm col-span-2 bg-backg rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
-                  type="number" id="budget_amount" [(ngModel)]="catInc.budget_expected" />
+                  type="number"  [(ngModel)]="catInc.budget_expected" />
               </div>
               <div class="flex flex-row justify-between">
                 <button

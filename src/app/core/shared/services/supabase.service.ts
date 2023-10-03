@@ -3,6 +3,7 @@ import { AuthChangeEvent, AuthSession, createClient, Session, SupabaseClient, Us
 import { environment } from 'src/environments/environment';
 import { BudgetAlertClass, BudgetPercentage, UserRoles} from '../../models-interface/enums';
 import { Subject } from 'rxjs';
+import { defaultBudgetsExpenses, defaultBudgetsIncomes, defaultCategoriesExpenses, defaultCategoriesIncomes, defaultTrxExpenses, defaultTrxIncomes } from 'src/app/core/helpers/new-user';
 
 export interface Profile {
   id?: string;
@@ -112,9 +113,85 @@ export class SupabaseService {
     if (!error && data.user) {
       await this.createProfile(data.user.id).then((resp: any) => {
         if (resp.error)
-          throw new Error('Ha ocurrido algun error al crear el perfil');
+          throw new Error('Ha ocurrido algún error al crear el perfil');
       });
     }
+    //Categorias por defecto
+    //Gastos
+    console.log('-------- GASTOS------------')
+    const arrayManyExpenses  = data.user? defaultCategoriesExpenses(data.user.id) : []
+    if(arrayManyExpenses.length > 0){
+      const { data, error } = await this.supabase
+      .from('category_expense')
+      .insert(arrayManyExpenses)
+      .select()
+      if (error) {
+        console.log('ERROR al crear Categorías de gastos por defecto', error);
+      }else{
+        console.log('Categorías de gastos por defecto creadas correctamente', data);
+        const arrayBudgetsExpenses = defaultBudgetsExpenses(data);
+        const { data:budgetsExpenses, error } = await this.supabase
+        .from('budgets')
+        .insert(arrayBudgetsExpenses)
+        .select()
+        if (error) {
+          console.log('ERROR al crear Presupuestos de gastos por defecto', error);
+        }else{
+          console.log('Presupuestos de gastos por defecto creadas correctamente', budgetsExpenses);
+
+          const arrayTrxExpenses = defaultTrxExpenses(data);
+          console.log('Lo que se va a guardar en expenses',arrayTrxExpenses)
+          const { data:trxExpenses, error:trxError } = await this.supabase
+          .from('expenses')
+          .insert(arrayTrxExpenses)
+          .select()
+          if (trxError) {
+            console.log('ERROR al crear transacciones de gastos por defecto', error);
+          }
+          console.log('Transacciones de gastos por defecto creadas correctamente', trxExpenses);
+        }
+
+      }
+    }
+    //Ingresos
+    console.log('-------- INGRESOS------------')
+    const arrayManyIncomes = data.user? defaultCategoriesIncomes(data.user.id) : []
+    if(arrayManyIncomes.length > 0){
+      const { data, error } = await this.supabase
+      .from('category_income')
+      .insert(arrayManyIncomes)
+      .select()
+     
+     
+      if (error) {
+        console.log('ERROR al crear Categorías de ingresos por defecto', error);
+      }else{
+        console.log('Categorías de ingresos por defecto creadas correctamente', data);
+        const arrayBudgetsIncomes = defaultBudgetsIncomes(data);
+        const { data:budgetsIncomes, error } = await this.supabase
+        .from('budgets_incomes')
+        .insert(arrayBudgetsIncomes)
+        .select()
+        if (error) {
+          console.log('ERROR al crear Presupuestos de ingresos por defecto', error);
+        }else{
+          console.log('Presupuestos de ingresos por defecto creadas correctamente', budgetsIncomes);
+
+          const arrayTrxIncomes = defaultTrxIncomes(data);
+          console.log('Lo que se va a guardar en expenses',arrayTrxIncomes)
+          const { data:trxIncomes, error:trxIncomesError } = await this.supabase
+          .from('income')
+          .insert(arrayTrxIncomes)
+          .select()
+          if (trxIncomesError) {
+            console.log('ERROR al crear transacciones de ingresos por defecto', error);
+          }
+          console.log('Transacciones de ingresos por defecto creadas correctamente', trxIncomes);
+        }
+       
+      }
+    }
+
     return { data, error };
   }
   async sendConfirmationEmail(email: string) {
@@ -209,7 +286,10 @@ export class SupabaseService {
       return error;
     }
   }
-
+  async updatePass(new_password: string){
+    const { data, error} = await this.supabase.auth.updateUser({ password: new_password })
+    return {data, error}
+  }
   //CATEGORIES
   async getCategoriesExpenses(user_uuid: string, year?:number, month?:number){
     let query = this.supabase
@@ -467,10 +547,10 @@ export class SupabaseService {
     return { data, error };
   }
 
-  async getExpensesHistory(user_uuid: string) {
+  async getExpensesHistory(user_uuid: string, year?:number, month?:number) {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = year ? year : currentDate.getFullYear();
+    const currentMonth = month ? month : currentDate.getMonth() + 1;
 
     const { data: expense_history, error } = await this.supabase
       .from('expense_history_new')
@@ -482,10 +562,10 @@ export class SupabaseService {
     return { expense_history, error };
   }
 
-  async getIncomesHistory(user_uuid: string) {
+  async getIncomesHistory(user_uuid: string, year?:number, month?:number) {
     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = year ? year : currentDate.getFullYear();
+    const currentMonth = month ? month : currentDate.getMonth() + 1;
 
     let { data: income_history, error } = await this.supabase
       .from('income_history_new')
@@ -616,7 +696,8 @@ export class SupabaseService {
       }
       return item;
     });
-    return { budgets_view, error };
+    console.log('budddd', budgets)
+    return { budgets, error };
   }
   async createBudgetExpense( formData: {category_id: string | number,budget_expected: number,user_uuid: string, month?: number, year?:number}) {
     try {
@@ -840,4 +921,19 @@ export class SupabaseService {
     return { data: gananciasPerdidasData, error: categoryError || expensesError };
   }
   
+// Plans
+async getPlans() {
+    // Obtener la lista de planes
+    let { data: plans, error } = await this.supabase
+      .from('plans')
+      .select('id, plan_price_yearly, isMoustUsed , plan_note, plan_title, plan_type, plan_price_montly, plan_items, plan_order');
+      return {plans, error};
+  }
+
+
 }
+const family = ["Todo lo incluido en plan Premium","Diferentes usuarios comparten gastos en común y ademas tienen sus gastos personales","Gestión de activos e inversiones","Gestión deudas y préstamos"]
+
+const free = ["categorías personalizadas","Presupuestos mensuales en base a las categorías","Estado de Perdidas y Ganancias","Historial de gastos e ingresos personales"]
+
+const premium = ["Todo lo incluido en plan Free ","Gestión de gastos con cuotas","Gestión y control de tarjetas de crédito","Gestión de prestamos inter-personales (a quién le debo, quién me debe)"]

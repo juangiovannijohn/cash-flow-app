@@ -12,7 +12,7 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 export class PerfilUsuarioComponent implements OnInit {
   @Input()
   user: any;
-  loading = false
+
   categoriesExpenses: any[] | null = []
   categoriesIncomes: any[] | null = []
   categoriesExpensesNonBudgeted : any[] = []
@@ -21,7 +21,6 @@ export class PerfilUsuarioComponent implements OnInit {
   showFormNewIncome: boolean = false;
   budgetExpensesForm: FormGroup;
   budgetIncomeForm: FormGroup;
-  updateProfileForm: FormGroup;
   showModal: boolean = false;
   showAlert: boolean = false;
   classesModal: string = '';
@@ -36,12 +35,6 @@ export class PerfilUsuarioComponent implements OnInit {
 
 
   constructor(private readonly supabase: SupabaseService, private formBuilder: FormBuilder, private router: Router, private route: ActivatedRoute) {
-    this.updateProfileForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      full_name: ['', Validators.required],
-      website: ['', Validators.required],
-    })
-
     this.budgetExpensesForm = this.formBuilder.group({
       budget_expected: ['', [Validators.required,Validators.min(0)]],
       category_id:  ['', Validators.required],
@@ -60,13 +53,9 @@ export class PerfilUsuarioComponent implements OnInit {
     const currentDate = new Date();
     this.currentYear =  currentDate.getFullYear();
     this.currentMonth = currentDate.getMonth() + 1;
-    this.user = await this.supabase.getUser();
+    this.user = await this.supabase.getUser()
+    console.log(this.user)
     this.getProfile(this.user, this.currentYear,this.currentMonth );
-    this.updateProfileForm.patchValue({
-      username: this.user?.username,
-      full_name: this.user?.full_name,
-      website: this.user?.website
-    });
 
   }
 
@@ -88,28 +77,8 @@ export class PerfilUsuarioComponent implements OnInit {
     }
   }
 
-  async updateProfile(): Promise<void> {
-    try {
-      this.loading = true
-      const username = this.updateProfileForm.value.username as string
-      const website = this.updateProfileForm.value.website as string
-      const full_name = this.updateProfileForm.value.full_name as string
-      const { error } = await this.supabase.updateProfile({
-        id: this.user.id,
-        username,
-        website,
-        full_name,
-      })
-      if (error) throw error
-    } catch (error) {
-      console.log(error)
-      if (error instanceof Error) {
-        this.openAlert('text-red', `${error.message}`);
-      }
-    } finally {
-      this.loading = false
-    }
-  }
+
+
 
   async getCategories(user_uuid: string, year?:number, month?:number) {
     //gastos

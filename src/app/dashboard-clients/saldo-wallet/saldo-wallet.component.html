@@ -1,4 +1,5 @@
 <div class="text-text w-full  p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
+  <p class="text-warning hidden">Hola Hacker</p>
   <ng-container  *ngIf="isPremium">
     <app-cashflow></app-cashflow>
   </ng-container>
@@ -15,12 +16,12 @@
           </div>
           <div *ngIf="budget.over" class="col-span-1 flex flex-row justify-between">
             <p class="text-text uppercase text-base">excedido</p>
-            <p class="text-center text-text  font-medium text-base opacity-70"> {{budget.budget_sum |
+            <p class="text-center text-text  font-medium text-base opacity-70"> {{budget.budget_expected - budget.budget_sum  |
               ARS}} </p>
           </div>
           <div *ngIf="!budget.over" class="col-span-1 flex flex-row justify-between">
-            <p class="text-text opacity-50 font-thin text-xs leading-6">Gastado</p>
-            <p [ngClass]="budget.class" class="text-center font-medium text-base leading-none"> {{budget.budget_sum |
+            <p class="text-text opacity-50 font-thin text-xs leading-6">Restante</p>
+            <p [ngClass]="budget.class" class="text-center font-medium text-base leading-none opacity-100"> {{budget.budget_expected - budget.budget_sum |
               ARS}} </p>
           </div>
           <ng-container *ngIf="budget.noBudgetAmount">
@@ -29,13 +30,29 @@
         </div>
       </ng-container>
     </div>
+    <ng-container *ngIf="(budgets.length > 0 );else newBudgets">
+      <div class="my-3">
+        <button routerLink="/intranet/perfil" fragment="categorias_personalizadas"
+          class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
+          Editar Presupuesto
+        </button>
+      </div>
+    </ng-container>
+   <ng-template #newBudgets>
     <div class="my-3">
       <button routerLink="/intranet/perfil" fragment="categorias_personalizadas"
         class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
-        Editar Presupuesto
+        Crear Presupuestos
       </button>
     </div>
+   </ng-template> 
   </div>
+  <!-- Historial anterior -->
+  <app-old-budgets
+  [title]="titleOldBudgets" 
+  (currentMonth)="getCategoriesOldExpenses(currentYear, $event)"
+  (currentYear)="getCategoriesOldExpenses($event, currentMonth)">
+  </app-old-budgets>
   <div class="w-full">
     <h2 class="text-lg text-start font-semibold text-accent mb-2">Historial</h2>
     <div class="grid grid-cols-1">
@@ -118,5 +135,13 @@
         </div>
       </ng-container>
     </div>
+    <ng-container *ngIf="(transactionsHistory.length <= 0 )">
+      <div class="my-3">
+        <button routerLink="/intranet/movimientos" 
+          class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
+          Cargar nuevo movimiento
+        </button>
+      </div>
+    </ng-container>
   </div>
 </div>

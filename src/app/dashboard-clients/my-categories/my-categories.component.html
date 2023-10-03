@@ -47,9 +47,9 @@
           <form class="grid grid-cols-1" [formGroup]="categoryExpensesForm" (ngSubmit)="createCategoryExpense()">
             <div>
               <div class="grid grid-cols-4">
-                <label class="text-sm col-span-2 mb-1" for="category_name">Nombre Categoría</label>
+                <label class="text-sm col-span-2 mb-1" >Nombre Categoría</label>
                 <input class="bg-backg text-sm col-span-2 rounded-sm p-1 w-full text-text text-opacity-50 mb-2"
-                  type="text" id="category_name" formControlName="category_name" placeholder="Ej: Alimentos" />
+                  type="text"  formControlName="category_name" placeholder="Ej: Alimentos" />
               </div>
               <div *ngIf="
                   categoryExpensesForm.get('category_name')?.invalid &&
@@ -152,9 +152,9 @@
           <form class="grid grid-cols-1" [formGroup]="categoryIncomeForm" (ngSubmit)="createCategoryIncome()">
             <div>
               <div class="grid grid-cols-4">
-                <label class="text-sm col-span-2" for="category_name">Nombre Categoría</label>
+                <label class="text-sm col-span-2" >Nombre Categoría</label>
                 <input class="bg-backg text-sm rounded-sm col-span-2 p-1 w-full text-text text-opacity-50 mb-2"
-                  type="text" id="category_name" formControlName="category_name" placeholder="Ej: Sueldo" />
+                  type="text"  formControlName="category_name" placeholder="Ej: Sueldo" />
               </div>
               <div *ngIf="
                   categoryIncomeForm.get('category_name')?.invalid &&

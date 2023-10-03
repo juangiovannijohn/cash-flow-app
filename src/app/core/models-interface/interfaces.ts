@@ -21,3 +21,14 @@ export interface TransactionsDetails {
     typeExpense:   boolean;
     showFormEdit:  boolean;
 }
+
+export interface Plans {
+  id:                number;
+  plan_price_yearly: number | null;
+  isMoustUsed:       boolean;
+  plan_note:         string;
+  plan_title:        string;
+  plan_type:         string;
+  plan_price_montly: number | null;
+  plan_items:        string[];
+}

@@ -14,7 +14,7 @@ export class SaldoWalletComponent implements OnInit {
   isPremium:boolean = false;
   user: any;
   transactionsHistory: TransactionHistory[] = [];
-  budgets: any[] | null = [];
+  budgets: any[] = [];
   CategoryType: any = CategoryType;
   expensesCategories: any[] | null = []
   incomeCategories: any[] | null = []
@@ -24,21 +24,35 @@ export class SaldoWalletComponent implements OnInit {
   classesModal:string = '';
   messageModal:string = '';
 
+  //old budgets
+  titleOldBudgets:string = 'Balances anteriores'
+  currentMonth: number = 0;
+  currentYear: number = 0;
+
   constructor(private supabase: SupabaseService ,private router: Router, private route: ActivatedRoute) { }
   async ngOnInit(): Promise<void> {
     this.user = await this.supabase.getUser();
-    this.getProfile(this.user);
+    this.getProfile(this.user, this.currentYear, this.currentMonth);
   }
 
-  async getProfile(user:any) {
+  //para modificar los meses anteriores y futuros
+  getCategoriesOldExpenses(year:number, month:number){
+    this.currentMonth= month;
+    this.currentYear = year;
+    this.getCategories(this.user.id, year, month);
+    this.getTransactions(this.user.id, year, month);
+    this.getCategory(this.user.id, year, month);
+  }
+
+  async getProfile(user:any, currentYear?:number, currentMonth?:number) {
     try {
       const role =  user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;  
       
       if (role == UserRoles.Normal || role == UserRoles.Premium) {
         this.isPremium = role == UserRoles.Premium ? false : true; //Valida que el usuario sea Premium
-        this.getCategories(user.id);
-        this.getTransactions(user.id);
-        this.getCategory(user.id);
+        this.getCategories(user.id, currentYear, currentMonth);
+        this.getTransactions(user.id, currentYear, currentMonth);
+        this.getCategory(user.id, currentYear, currentMonth);
       } else {
         console.log('se cerro sesion')
         this.supabase.signOut();
@@ -52,10 +66,10 @@ export class SaldoWalletComponent implements OnInit {
     }
   }
 
-  async getTransactions(user_uuid:string) {
+  async getTransactions(user_uuid:string, year?:number, month?:number) {
     let newArray: any[] = [];
 
-    await this.supabase.getExpensesHistory(user_uuid).then(resp => {
+    await this.supabase.getExpensesHistory(user_uuid, year, month).then(resp => {
       if (!resp.error && resp.expense_history) {
         resp.expense_history.map((item: any) => { item.typeExpense = true; item.showFormEdit = false; return item })
         newArray = newArray.concat(resp.expense_history);
@@ -64,7 +78,7 @@ export class SaldoWalletComponent implements OnInit {
       }
     });
 
-    await this.supabase.getIncomesHistory(user_uuid).then(resp => {
+    await this.supabase.getIncomesHistory(user_uuid, year, month).then(resp => {
       if (!resp.error && resp.income_history) {
         resp.income_history.map((item: any) => { item.typeExpense = false; item.showFormEdit = false; return item })
         newArray = newArray.concat(resp.income_history);
@@ -80,8 +94,8 @@ export class SaldoWalletComponent implements OnInit {
     });
     this.transactionsHistory = newArray;
   }
-  getCategories(user_uuid:string){
-    this.supabase.getCategoriesExpenses(user_uuid)
+  getCategories(user_uuid:string, year?:number, month?:number){
+    this.supabase.getCategoriesExpenses(user_uuid, year, month)
       .then(resp => {
         if (!resp.error) {
           this.expensesCategories = resp.category_expense_view;
@@ -91,7 +105,7 @@ export class SaldoWalletComponent implements OnInit {
       })
       .catch(err => console.log(err));
 
-    this.supabase.getCategoriesIncome(user_uuid)
+    this.supabase.getCategoriesIncome(user_uuid, year, month)
       .then(resp => {
         if (!resp.error) {
           this.incomeCategories = resp.category_income;
@@ -103,10 +117,10 @@ export class SaldoWalletComponent implements OnInit {
 
   }
 
-  getCategory(user_uuid: string) {
-    this.supabase.getBudgets(user_uuid).then((resp) => {
+  getCategory(user_uuid: string, year?:number, month?:number) {
+    this.supabase.getBudgets(user_uuid, year, month).then((resp) => {
       if (!resp.error) {
-        const budMap = resp.budgets_view?.map((item: any) => {
+        const budMap = resp.budgets?.map((item: any) => {
           item.noBudgetAmount = false
           if (item.budget_expected == 0) {
             item.noBudgetAmount = true

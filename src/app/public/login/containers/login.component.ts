@@ -13,7 +13,7 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 })
 export class LoginComponent implements OnInit  {
   loading = false
-  showLoginWP= false;
+  showLoginWP= true;
   user:any;
   signInForm = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]]

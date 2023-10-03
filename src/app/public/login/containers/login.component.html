@@ -32,12 +32,12 @@
                 <label class=" mb-2" for="email">Email</label>
                 <input [ngClass]="signInForm.get('email')?.invalid ? 'ng-valid' : 'ng-invalid' " id="email"
                   formControlName="email" class=" bg-backg px-1 py-2 rounded w-full" type="email"
-                  placeholder="prueba@prueba.com" />
+                  placeholder="prueba@prueba.com" autocomplete="email" />
               </div>
               <div class="mb-6">
                 <label class=" mb-2" for="pass">Password</label>
                 <input [ngClass]="signInForm.get('pass')?.invalid ? 'ng-valid' : 'ng-invalid' " id="pass"
-                  formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="a" />
+                  formControlName="pass" class=" bg-backg px-1 py-2 rounded w-full" type="password" placeholder="******" autocomplete="current-password"  />
               </div>
               <div>
                 <button [ngClass]="{ 'opacity-60': !loginFormWP.valid, 'opacity-100 hover:border-accent/80 hover:opacity-100 font-medium': loginFormWP.valid }" type="submit" class="bg-accent/10 border-2 border-accent/20 text-accent hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg  w-full ease-in-out duration-200"
