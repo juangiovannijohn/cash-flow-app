@@ -127,8 +127,7 @@ export class SupabaseService {
       .select()
       if (error) {
         console.log('ERROR al crear Categorías de gastos por defecto', error);
-      }else{
-        console.log('Categorías de gastos por defecto creadas correctamente', data);
+      }else{ 
         const arrayBudgetsExpenses = defaultBudgetsExpenses(data);
         const { data:budgetsExpenses, error } = await this.supabase
         .from('budgets')
@@ -136,8 +135,7 @@ export class SupabaseService {
         .select()
         if (error) {
           console.log('ERROR al crear Presupuestos de gastos por defecto', error);
-        }else{
-          console.log('Presupuestos de gastos por defecto creadas correctamente', budgetsExpenses);
+        }else{  
 
           const arrayTrxExpenses = defaultTrxExpenses(data);
           console.log('Lo que se va a guardar en expenses',arrayTrxExpenses)
@@ -147,14 +145,12 @@ export class SupabaseService {
           .select()
           if (trxError) {
             console.log('ERROR al crear transacciones de gastos por defecto', error);
-          }
-          console.log('Transacciones de gastos por defecto creadas correctamente', trxExpenses);
+          } 
         }
 
       }
     }
-    //Ingresos
-    console.log('-------- INGRESOS------------')
+    //Ingresos 
     const arrayManyIncomes = data.user? defaultCategoriesIncomes(data.user.id) : []
     if(arrayManyIncomes.length > 0){
       const { data, error } = await this.supabase
@@ -165,8 +161,7 @@ export class SupabaseService {
      
       if (error) {
         console.log('ERROR al crear Categorías de ingresos por defecto', error);
-      }else{
-        console.log('Categorías de ingresos por defecto creadas correctamente', data);
+      }else{ 
         const arrayBudgetsIncomes = defaultBudgetsIncomes(data);
         const { data:budgetsIncomes, error } = await this.supabase
         .from('budgets_incomes')
@@ -174,19 +169,15 @@ export class SupabaseService {
         .select()
         if (error) {
           console.log('ERROR al crear Presupuestos de ingresos por defecto', error);
-        }else{
-          console.log('Presupuestos de ingresos por defecto creadas correctamente', budgetsIncomes);
-
-          const arrayTrxIncomes = defaultTrxIncomes(data);
-          console.log('Lo que se va a guardar en expenses',arrayTrxIncomes)
+        }else{ 
+          const arrayTrxIncomes = defaultTrxIncomes(data); 
           const { data:trxIncomes, error:trxIncomesError } = await this.supabase
           .from('income')
           .insert(arrayTrxIncomes)
           .select()
           if (trxIncomesError) {
             console.log('ERROR al crear transacciones de ingresos por defecto', error);
-          }
-          console.log('Transacciones de ingresos por defecto creadas correctamente', trxIncomes);
+          } 
         }
        
       }
@@ -408,8 +399,7 @@ export class SupabaseService {
   async deleteCategoryIncome(id_income: string | number) {
     try {
       // Validar el tipo de id_income
-      if (typeof id_income !== 'string' && typeof id_income !== 'number') {
-        console.log('entro aca');
+      if (typeof id_income !== 'string' && typeof id_income !== 'number') { 
         throw new Error('id_income debe ser una cadena de texto o un número');
       }
 
@@ -418,8 +408,7 @@ export class SupabaseService {
         .delete()
         .eq('id', id_income);
 
-      if (error) {
-        console.log('entro aquiii', error);
+      if (error) { 
         throw new Error('Error al eliminar la categoría de ingreso');
       }
 
@@ -695,8 +684,7 @@ export class SupabaseService {
         item.class = BudgetAlertClass.Danger;
       }
       return item;
-    });
-    console.log('budddd', budgets)
+    }); 
     return { budgets, error };
   }
   async createBudgetExpense( formData: {category_id: string | number,budget_expected: number,user_uuid: string, month?: number, year?:number}) {
@@ -813,20 +801,7 @@ export class SupabaseService {
       return { error: error.message };
     }
   }
-  async createManyBudgetsIncomes(){
-    const arrayMany = [
-      {category_name: 'hola1', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description1'},
-      {category_name: 'hola2', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description2'},
-      {category_name: 'hola3', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description3'},
-      {category_name: 'hola4', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description4'},
-    ]
-    const { data, error } = await this.supabase
-    .from('category_income')
-    .insert(arrayMany)
-    .select()
-
-    console.log('juaaaaan', data);
-  }
+ 
   async deleteBudgetExpense(budget_id: number | string){
     const { error } = await this.supabase
     .from('budgets')

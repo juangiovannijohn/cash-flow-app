@@ -53,8 +53,7 @@ export class PerfilUsuarioComponent implements OnInit {
     const currentDate = new Date();
     this.currentYear =  currentDate.getFullYear();
     this.currentMonth = currentDate.getMonth() + 1;
-    this.user = await this.supabase.getUser()
-    console.log(this.user)
+    this.user = await this.supabase.getUser();
     this.getProfile(this.user, this.currentYear,this.currentMonth );
 
   }
@@ -115,6 +114,7 @@ export class PerfilUsuarioComponent implements OnInit {
   getCategoriesOldExpenses(year:number, month:number){
     this.currentMonth= month;
     this.currentYear = year;
+
     this.getCategories(this.user.id, year, month);
   }
 
@@ -254,11 +254,6 @@ export class PerfilUsuarioComponent implements OnInit {
     } else {
             this.deleteBudgetIncome(budget_id);
     }
-  }
-  crearMucho(){
-    this.supabase.createManyBudgetsIncomes().then(resp=> {
-    })
-    .catch(error => console.log(error))
   }
   openModal() {
     this.showModal = true;

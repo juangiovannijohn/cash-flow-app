@@ -32,3 +32,46 @@ export interface Plans {
   plan_price_montly: number | null;
   plan_items:        string[];
 }
+
+export interface GPExpenses {
+  data:  GPExpensesDatum[];
+  error: any;
+}
+
+export interface GPExpensesDatum {
+  id:            number;
+  category_name: string;
+  user_uuid:     string;
+  budget_expected: number;
+  data:          DatumDatum[];
+  sum:           number;
+}
+
+export interface DatumDatum {
+  category_expense_id: number;
+  expense_date:        Date;
+  expense_amount:      number;
+  user_uuid:           string;
+}
+
+export interface GPIncomes {
+  data:  GPIncomesDatum[];
+  error: any;
+}
+
+export interface GPIncomesDatum {
+  id:            number;
+  category_name: string;
+  user_uuid:     string;
+  budget_expected: number;
+  data:          DatumDatum[];
+  sum:           number;
+}
+
+export interface DatumDatum {
+  category_income_id: number;
+  income_date:        Date;
+  income_amount:      number;
+  user_uuid:          string;
+}
+

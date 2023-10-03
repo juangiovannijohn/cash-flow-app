@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 
 @Component({
@@ -7,6 +7,9 @@ import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
   styleUrls: ['./cashflow.component.css']
 })
 export class CashflowComponent implements OnInit {
+  
+  @Input() currentMonth: number = 0;
+  @Input() currentYear: number = 0;
   user:any;
   isPremium:boolean = true;
   showDetails:boolean = true;
@@ -14,22 +17,25 @@ export class CashflowComponent implements OnInit {
   GPIncomes: GPIncomesDatum[]= []
   GPExpSum: number = 0
   GPIncSum: number = 0
-  currentMounth:string =''
+
+  currentMounth:string ='';
   constructor(private readonly supabase: SupabaseService,) { }
 
  async ngOnInit(): Promise<void> {
+  console.log('mes', this.currentMonth)
+  console.log('año', this.currentYear)
     this.user = await this.supabase.getUser();
-    this.getGananciasPerdidasExpenses(this.user.id);
-    this.getGananciasPerdidasIncomes(this.user.id);
-    this.currentMounth = this.obtenerMesActualEnEspanol()
+    this.getGananciasPerdidasExpenses(this.user.id, this.currentYear, this.currentMonth);
+    this.getGananciasPerdidasIncomes(this.user.id, this.currentYear, this.currentMonth);
+    this.currentMounth = this.obtenerMesActualEnEspanol(this.currentMonth)
   }
 
   //TODO: Sumatoria total de ingresos EN EL MES CORRIENTE. 
   //TODO: Sumatoria total de gastos EN EL MES CORRIENTE.  
   //TODO: Sumatoria de ingresos agrupadas por categoria EN EL MES CORRIENTE 
   //TODO: Sumatoria de GASTOS agrupadas por categoria EN EL MES CORRIENTE 
-  getGananciasPerdidasExpenses(user_uuid: string){
-  this.supabase.getGananciasPerdidasExpenses(user_uuid).then((resp:GPExpenses | any) =>{
+  getGananciasPerdidasExpenses(user_uuid: string, year?:number, month?: number){
+  this.supabase.getGananciasPerdidasExpenses(user_uuid,month,year ).then((resp:GPExpenses | any) =>{
     this.GPExpenses = resp.data? resp.data : [];
     let total:number = 0
     if (resp.data && resp.data.length > 0){
@@ -41,8 +47,8 @@ export class CashflowComponent implements OnInit {
     this.GPExpSum = total
   })
 }
-  getGananciasPerdidasIncomes(user_uuid: string){
-    this.supabase.getGananciasPerdidasIncomes(user_uuid).then((resp:GPIncomes | any ) =>{
+  getGananciasPerdidasIncomes(user_uuid: string, year?:number, month?: number){
+    this.supabase.getGananciasPerdidasIncomes(user_uuid,month,year).then((resp:GPIncomes | any ) =>{
       this.GPIncomes = resp.data? resp.data : [];
       let total:number = 0
       if (resp.data && resp.data.length > 0){
@@ -54,24 +60,19 @@ export class CashflowComponent implements OnInit {
       this.GPIncSum = total
     })
   }
-  obtenerMesActualEnEspanol():string{
-    // Crear un array con los nombres de los meses en español
+  obtenerMesActualEnEspanol(month: number): string {
     const mesesEnEspanol = [
       "enero", "febrero", "marzo", "abril", "mayo", "junio",
       "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
     ];
-    
-    // Obtener la fecha actual
-    const fechaActual = new Date();
-    
-    // Obtener el número del mes (los meses en JavaScript se indexan desde 0)
-    const numeroMes = fechaActual.getMonth();
-    
-    // Obtener el nombre del mes en español usando el array
-    const mesEnEspanol = mesesEnEspanol[numeroMes];
-    
-    return mesEnEspanol;
+  
+    if (month < 1 || month > 12) {
+      throw new Error("El número del mes debe estar entre 1 y 12.");
+    }
+  
+    return mesesEnEspanol[month - 1].charAt(0).toUpperCase() + mesesEnEspanol[month - 1].slice(1);
   }
+  
   
   
 }
@@ -115,9 +116,5 @@ export interface DatumDatum {
   income_date:        Date;
   income_amount:      number;
   user_uuid:          string;
-}
-
-function obtenerMesActualEnEspanol() {
-  throw new Error('Function not implemented.');
 }
 

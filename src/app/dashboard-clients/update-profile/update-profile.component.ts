@@ -34,8 +34,7 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.user = await this.supabase.getUser()
-    console.log(this.user)
+    this.user = await this.supabase.getUser() 
     this.updateProfileForm.patchValue({
       username: this.user.user_meta.username,
       full_name: this.user.user_meta.full_name,

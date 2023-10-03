@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionHistory, TransactionsDetails } from 'src/app/core/models-interface/interfaces';
+import { GPExpenses, GPExpensesDatum, GPIncomes, GPIncomesDatum, TransactionHistory, TransactionsDetails } from 'src/app/core/models-interface/interfaces';
 import { Profile, SupabaseService } from 'src/app/core/shared/services/supabase.service';
 import { CategoryType, UserRoles } from 'src/app/core/models-interface/enums';
 import { AuthSession } from '@supabase/supabase-js';
@@ -29,10 +29,26 @@ export class SaldoWalletComponent implements OnInit {
   currentMonth: number = 0;
   currentYear: number = 0;
 
+  //Estado perdidas y ganancias
+  showDetails:boolean = true;
+  GPExpenses: GPExpensesDatum[]= []
+  GPIncomes: GPIncomesDatum[]= []
+  GPExpSum: number = 0
+  GPIncSum: number = 0
+  currentMounth:string ='';
+
   constructor(private supabase: SupabaseService ,private router: Router, private route: ActivatedRoute) { }
   async ngOnInit(): Promise<void> {
+    const currentDate = new Date();
+    this.currentYear =  currentDate.getFullYear();
+    this.currentMonth = currentDate.getMonth() + 1;
     this.user = await this.supabase.getUser();
     this.getProfile(this.user, this.currentYear, this.currentMonth);
+
+    //Estado perdidas y ganancias
+    this.getGananciasPerdidasExpenses(this.user.id, this.currentYear, this.currentMonth);
+    this.getGananciasPerdidasIncomes(this.user.id, this.currentYear, this.currentMonth);
+    this.currentMounth = this.obtenerMesActualEnEspanol(this.currentMonth)
   }
 
   //para modificar los meses anteriores y futuros
@@ -42,6 +58,9 @@ export class SaldoWalletComponent implements OnInit {
     this.getCategories(this.user.id, year, month);
     this.getTransactions(this.user.id, year, month);
     this.getCategory(this.user.id, year, month);
+    this.getGananciasPerdidasExpenses(this.user.id, year, month);
+    this.getGananciasPerdidasIncomes(this.user.id, year, month);
+    this.currentMounth = this.obtenerMesActualEnEspanol(month)
   }
 
   async getProfile(user:any, currentYear?:number, currentMonth?:number) {
@@ -207,5 +226,45 @@ export class SaldoWalletComponent implements OnInit {
     this.messageModal = '';
     this.classesModal = '';
     this.showAlert = false;
+  }
+
+  getGananciasPerdidasExpenses(user_uuid: string, year?:number, month?: number){
+    this.supabase.getGananciasPerdidasExpenses(user_uuid,month,year ).then((resp:GPExpenses | any) =>{
+      this.GPExpenses = resp.data? resp.data : [];
+      let total:number = 0
+      if (resp.data && resp.data.length > 0){
+        const dataArray = resp.data.map((item: any) => {
+          total += item.sum
+          return item
+        })
+      }
+      this.GPExpSum = total
+    })
+  }
+  getGananciasPerdidasIncomes(user_uuid: string, year?:number, month?: number){
+    this.supabase.getGananciasPerdidasIncomes(user_uuid,month,year).then((resp:GPIncomes | any ) =>{
+      this.GPIncomes = resp.data? resp.data : [];
+      let total:number = 0
+      if (resp.data && resp.data.length > 0){
+        const dataArray = resp.data.map((item: any) => {
+          total += item.sum
+          return item
+        })
+      }
+      this.GPIncSum = total
+    })
+    
+  }
+  obtenerMesActualEnEspanol(month: number): string {
+    const mesesEnEspanol = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+  
+    if (month < 1 || month > 12) {
+      throw new Error("El número del mes debe estar entre 1 y 12.");
+    }
+  
+    return mesesEnEspanol[month - 1].charAt(0).toUpperCase() + mesesEnEspanol[month - 1].slice(1);
   }
 }
