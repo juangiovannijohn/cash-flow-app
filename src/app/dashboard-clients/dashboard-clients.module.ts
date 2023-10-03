@@ -10,11 +10,12 @@ import { DashboardClientsComponent } from './dashboard-clients.component';
 import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { ArsPipe } from '../core/models-interface/ars.pipe';
 import { ConfirmDeleteCategoryComponent } from '../core/shared/components/confirm-delete-category/confirm-delete-category.component';
 import { MonthsPipe } from '../core/models-interface/months.pipe';
 import { OldBudgetsComponent } from './old-budgets/old-budgets.component';
 import { MyCategoriesComponent } from './my-categories/my-categories.component';
+import { ArsPipe } from '../core/models-interface/ars.pipe';
+import { UpdateProfileComponent } from './update-profile/update-profile.component';
 
 
 
@@ -26,10 +27,11 @@ import { MyCategoriesComponent } from './my-categories/my-categories.component';
       DashboardClientsComponent,
       TransactionHistoryComponent,
       PerfilUsuarioComponent,
-      ArsPipe,
       MonthsPipe,
       OldBudgetsComponent,
-      MyCategoriesComponent
+      MyCategoriesComponent,
+      ArsPipe,
+      UpdateProfileComponent
   ],
   imports: [
     CommonModule,
@@ -40,7 +42,8 @@ import { MyCategoriesComponent } from './my-categories/my-categories.component';
   ],
   exports:[],
   providers: [
-    DatePipe,]
+    DatePipe,
+  ]
 })
 export class DashboardClientsModule { 
   constructor(){

@@ -11,7 +11,7 @@ module.exports = {
     'backg': '#1c1c1c',
     'gris': '#232323',
     'red': '#dc2626',
-    'warning': '#d97706',
+    'warning': '#f39c12',
     'green-oscuro': '#0c1f17',
     'green-claro': '#40bf86'
   },

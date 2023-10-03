@@ -1,0 +1,48 @@
+<div class="bg-backg min-h-screen w-full">
+    <div class="relative z-10 py-16 lg:py-28">
+        <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8"></div>
+        <h1 class="text-[16px] text-accent text-center">Pricing</h1>
+        <p class="text-[36px] text-text text-center">Predictable pricing, no surprises</p>
+        <p class="text-[18px] text-text/80 text-center">Start building for free, collaborate with a team, then scale to millions of users</p>
+    </div>
+    <div class="grid grid-cols-3 text-text w-full gap-3 max-w-4xl mx-auto">
+        <ng-container *ngFor="let plan of plans">
+
+            <div [ngClass]="plan.isMoustUsed ? 'bg-accent border-accent  border-2  rounded-md' : ''" class="">
+                <div class="min-h-[25px]">
+                <p *ngIf="plan.isMoustUsed" class="text-backg text-center text-sm my-1">Más popular</p>
+            </div>
+            <div class="flex flex-col py-6 px-8 border rounded-[4px] border-text/10 bg-gris">
+                <div class="border-b border-text/10">
+                    <p class="text-2xl font-normal uppercase flex items-center gap-4 font-mono text-transparent bg-clip-text bg-gradient-to-bl from-accent/70 to-accent/90 mb-4">{{plan.plan_type}}</p>
+                    <p class="text-text/80 text-sm mb-3">{{plan.plan_note}}</p>
+                </div>
+                <div class="flex flex-col justify-center min-h-[100px] border-b border-text/10">
+                    <p class="text-accent/70 text-3xl">U$D{{plan.plan_price_montly }} <span class="text-sm text-text/80 uppercase">/ mes</span></p>
+                </div>
+                <div  class="min-h-[300px]">
+                    <!-- <p class="text-text/90">Características</p> -->
+                    <ul>
+                    <ng-container *ngFor="let item of plan.plan_items">
+                        <li class="flex flex-row justify-start items-center my-2">
+                            <span class="mr-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4cc38a" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </span>
+                            <span class="text-sm text-text/80">{{item}}</span>
+                        </li>
+                    </ng-container>
+                    </ul>
+                </div>
+                <div  class="min-h-[80px] flex flex-col justify-end">
+                    <!-- <p>Your cost control settings determine if you allow over-usage.</p> -->
+                    <button class="opacity-100 hover:border-accent/80 hover:opacity-100 font-medium bg-accent/10 border-2 border-accent/20 text-accent  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg  w-full ease-in-out duration-200">Get Started</button>
+                </div>
+            </div>
+        </div>
+        </ng-container>
+
+    </div>
+    <div class="min-h-[100px]"></div>
+</div>

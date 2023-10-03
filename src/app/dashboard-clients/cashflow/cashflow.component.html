@@ -1,3 +1,4 @@
+<!-- ESTADO PERDIDAS Y GANANCIAS -->
 <div class="w-full mb-4">
   <h2 class="text-lg text-start font-semibold text-accent mb-2">
     Estado de pérdidas y ganancias
@@ -30,7 +31,7 @@
         </div>
       </div>
       <!-- Montos finales -->
-      <div [ngClass]="showDetails? 'border-l-0': 'border-l'" class="col-span-1 border-text/10  flex flex-col justify-center items-center">
+      <div [ngClass]="showDetails? 'hidden': 'border-l'" class="col-span-1 border-text/10  flex flex-col justify-center items-center">
         <p class="text-text opacity-50 uppercase font-thin text-xs tracking-widest">Total ingresos</p>
         <p class="text-center font-medium text-base leading-none text-accent">{{GPIncSum | ARS}}</p>
       </div>
@@ -63,7 +64,7 @@
         </div>
       </div>
       <!-- Montos finales -->
-      <div [ngClass]="showDetails? 'border-l-0': 'border-l'"
+      <div [ngClass]="showDetails? 'hidden': 'border-l'"
         class=" border-text/10 col-span-1 flex flex-col justify-center items-center"
       >
         <p class="text-text opacity-50 uppercase font-thin text-xs tracking-widest">Total Gastos</p>
@@ -71,9 +72,9 @@
       </div>
     </div>
     <!-- divisor -->
-    <div *ngIf="!showDetails" class="w-full border-t border-text/10 mt-2 mb-2"></div>
+    <div *ngIf="!showDetails && false" class="w-full border-t border-text/10 mt-2 mb-2"></div>
     <!-- Activos y Pasitovos -->
-    <div *ngIf="!showDetails" class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-3">
+    <div *ngIf="!showDetails && false" class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-3">
       <!-- Activos -->
       <div class="col-span-1 border-b sm:border-b-0 sm:border-r border-text/10 pr-2">
         <div class="mb-3">
@@ -127,7 +128,11 @@
 
       </div>
     </div>
-
+      <!-- Saldo -->
+      <div [ngClass]="showDetails? '': 'hidden'" class="w-full border-text/10  flex flex-col justify-center items-center">
+        <p class="text-text opacity-70 uppercase font-thin text-xs tracking-widest mb-2">Saldo</p>
+        <p class="text-center font-medium text-xl leading-none text-accent">{{GPIncSum - GPExpSum | ARS}}</p>
+      </div>
 
   </div>
   <div class="my-3">

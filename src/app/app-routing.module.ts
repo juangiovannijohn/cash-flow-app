@@ -8,6 +8,7 @@ import { BlogComponent } from './public/blog/containers/blog.component';
 import { SignupComponent } from './public/signup/signup.component';
 import { RequestResetPasswordComponent } from './public/request-reset-password/request-reset-password.component';
 import { AppComponent } from './app.component';
+import { PricingComponent } from './public/pricing/pricing.component';
 
 const routes: Routes = [
   {path: '', component: LoginComponent},
@@ -18,6 +19,7 @@ const routes: Routes = [
   {path: 'access-token', component: ResetPasswordComponent},
   {path: 'landing', component: HomeComponent},
   {path: 'blog', component: BlogComponent },
+  {path: 'pricing', component: PricingComponent },
   {
     path: 'intranet',
     loadChildren: () => import('./dashboard-clients/dashboard-clients.module').then(m => m.DashboardClientsModule)
