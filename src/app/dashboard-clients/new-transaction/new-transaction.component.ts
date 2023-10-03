@@ -25,6 +25,8 @@ export class NewTransactionComponent implements OnInit {
   showAlertModal:boolean=false;
   classesModal:string = '';
   messageModal:string = '';
+  currentMonth: number = 0;
+  currentYear: number = 0;
 
   constructor(private formBuilder: FormBuilder,
     private datePipe: DatePipe,
@@ -46,15 +48,18 @@ export class NewTransactionComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const currentDate = new Date();
+    this.currentYear =  currentDate.getFullYear();
+    this.currentMonth = currentDate.getMonth() + 1;
     this.user = await this.supabase.getUser();
-    this.getProfile(this.user);
+    this.getProfile(this.user, this.currentYear,this.currentMonth);
   }
-  async getProfile(user:any) {
+  async getProfile(user:any, currentYear?:number, currentMonth?:number) {
     try {
       const role =  user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;  
 
       if (role == UserRoles.Normal || role == UserRoles.Premium) {
-        this.getCategories(user.id);
+        this.getCategories(user.id, currentYear, currentMonth);
       } else {
         console.log('se cerro sesion')
         this.supabase.signOut();
@@ -68,14 +73,14 @@ export class NewTransactionComponent implements OnInit {
     }
   }
 
-  getCategories(user_uuid:string){
-      this.supabase.getCategoriesExpenses(user_uuid)
+  getCategories(user_uuid:string, year?:number, month?:number){
+      this.supabase.getCategoriesExpenses(user_uuid, year, month)
         .then(resp => {
           this.expensesCategories = resp.category_expense_view;
         })
         .catch(err => console.log(err));
 
-      this.supabase.getCategoriesIncome(user_uuid)
+      this.supabase.getCategoriesIncome(user_uuid, year, month)
         .then(resp => {
           this.incomeCategories = resp.category_income;
         })

@@ -211,22 +211,56 @@ export class SupabaseService {
   }
 
   //CATEGORIES
-  async getCategoriesExpenses(user_uuid: string) {
-    let { data: category_expense_view, error } = await this.supabase
-      .from('category_expense_view')
-      .select('*')
-      .eq('user_uuid', user_uuid)
-      .order('category_name', { ascending: true });
+  async getCategoriesExpenses(user_uuid: string, year?:number, month?:number){
+    let query = this.supabase
+    .from('category_expense_view')
+    .select('*')
+    .eq('user_uuid', user_uuid)
+    if (year && month)  { 
+      query = query.gte('budget_month', `${year}-${month}-01`)
+      query = query.lt('budget_month', `${year}-${month+1}-01`)
+    }
+    query.order('category_name', { ascending: true })
+    const { data: category_expense_view, error } = await query
 
     return { category_expense_view, error };
   }
-  async getCategoriesIncome(user_uuid: string) {
-    let { data: category_income, error } = await this.supabase
-      .from('category_income')
-      .select('*')
+  async getCategoriesIncome(user_uuid: string, year?:number, month?:number) {
+    let query = this.supabase
+    .from('category_income_view')
+    .select('*')
+    .eq('user_uuid', user_uuid)
+    if (year && month)  { 
+      query = query.gte('budget_month', `${year}-${month}-01`)
+      query = query.lt('budget_month', `${year}-${month+1}-01`)
+    }
+    query.order('category_name', { ascending: true })
+    const { data:  category_income, error } = await query
+    
+    return {  category_income, error };
+  }
+  async getCategoriesExpensesDates(user_uuid: string) {
+
+    let { data: categories_dates, error } = await this.supabase
+      .from('category_expense_view')
+      .select('budget_month')
       .eq('user_uuid', user_uuid)
-      .order('category_name', { ascending: true });
-    return { category_income, error };
+
+    return { categories_dates, error };
+  }
+  async getAllCategoriesExpensesByUser(user_uuid:string){
+    let { data: category_expenses, error } = await this.supabase
+      .from('category_expense')
+      .select('id, category_name,category_expense_description')
+      .eq('user_uuid', user_uuid)
+    return { category_expenses, error };
+  }
+  async getAllCategoriesIncomesByUser(user_uuid:string){
+    let { data: category_incomes, error } = await this.supabase
+      .from('category_income')
+      .select('id, category_name,category_income_description')
+      .eq('user_uuid', user_uuid)
+    return { category_incomes, error };
   }
   async updateCategoryExpense(
     id_expense: string | number,
@@ -295,6 +329,7 @@ export class SupabaseService {
     try {
       // Validar el tipo de id_income
       if (typeof id_income !== 'string' && typeof id_income !== 'number') {
+        console.log('entro aca');
         throw new Error('id_income debe ser una cadena de texto o un número');
       }
 
@@ -304,6 +339,7 @@ export class SupabaseService {
         .eq('id', id_income);
 
       if (error) {
+        console.log('entro aquiii', error);
         throw new Error('Error al eliminar la categoría de ingreso');
       }
 
@@ -316,10 +352,8 @@ export class SupabaseService {
   async createCategoryExpense(
     category_name: string,
     user_uuid: string,
-    category_expense_description: string,
-    budget_amount?: number,
+    category_expense_description: string
   ) {
-    let budget_id;
     try {
       // Validar el tipo de id_income
       if (!category_name || !user_uuid) {
@@ -337,35 +371,7 @@ export class SupabaseService {
         .select();
       if (error) {
         console.log(error);
-        throw new Error('Error al crear la categoria');
-      }
-
-      budget_id = data[0]['id'];
-      //Si se crea la categoria correctamente y se agrega un monto al budget
-      if (budget_amount && budget_amount > 0) {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = 1;
-        const formattedDate = `${year}-${month
-          .toString()
-          .padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
-
-        const { data, error } = await this.supabase
-          .from('budgets')
-          .insert([
-            {
-              budget_date: formattedDate,
-              category_id: budget_id,
-              budget_expected: budget_amount,
-              user_uuid,
-            },
-          ])
-          .select();
-        if (error) {
-          console.log(error);
-          throw new Error('Error al crear el presupuesto de la categoría');
-        }
+        throw new Error('Error al crear la categoría');
       }
       return { data };
     } catch (error: any) {
@@ -377,7 +383,7 @@ export class SupabaseService {
   async createCategoryIncome(
     category_name: string,
     user_uuid: string,
-    category_income_description: string,
+    category_income_description: string
   ) {
     try {
       // Validar el tipo de id_income
@@ -397,12 +403,13 @@ export class SupabaseService {
       if (error) {
         throw new Error('Error al crear la categoria');
       }
-      return { data, error };
+      return { data };
     } catch (error: any) {
       // Manejar el error y retornar el mensaje
       return { error: error.message };
     }
   }
+
   async checkCategoryExpense(id_category_expense: number | string) {
     try {
       let { data: expenses, error } = await this.supabase
@@ -575,13 +582,18 @@ export class SupabaseService {
   }
 
   //Budgets
-  async getBudgets(user_uuid: string) {
+  async getBudgets(user_uuid: string, year?:number, month?: number) {
+    const currentDate = new Date();
+    const currentYear = year? year :  currentDate.getFullYear();
+    const currentMonth = month? month: currentDate.getMonth() + 1;
     const { data: budgets_view, error } = await this.supabase
       .from('budgets_view')
       .select('*')
-      .eq('user_uuid', user_uuid);
+      .eq('user_uuid', user_uuid)
+      .gte('bugget_date', `${currentYear}-${currentMonth}-01`)
+      .lt('bugget_date', `${currentYear}-${currentMonth + 1}-01`);
 
-    const busgets = budgets_view?.map((item: any) => {
+    const budgets = budgets_view?.map((item: any) => {
       item.class = BudgetAlertClass.Normal;
 
       let porcentaje = (item.budget_sum / item.budget_expected) * 100;
@@ -606,7 +618,72 @@ export class SupabaseService {
     });
     return { budgets_view, error };
   }
+  async createBudgetExpense( formData: {category_id: string | number,budget_expected: number,user_uuid: string, month?: number, year?:number}) {
+    try {
+      if (!formData.category_id || !formData.user_uuid) {
+        throw new Error('Los parámetros son obligatorios');
+      }
+      const date = new Date();
+      const AAAA = formData.year? formData.year : date.getFullYear();
+      const MM = formData.month ? formData.month : date.getMonth() + 1;
+      const DD = 1;
+      const formattedDate = `${AAAA}-${MM.toString().padStart(2, '0')}-${DD.toString().padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
 
+      const { data: budgets, error } = await this.supabase
+        .from('budgets')
+        .insert([
+          {
+            budget_date: formattedDate,
+            category_id: formData.category_id,
+            budget_expected: formData.budget_expected,
+            user_uuid: formData.user_uuid,
+          },
+        ])
+        .select('*');
+
+      if (error) {
+        throw new Error('Error al crear el presupuesto');
+      }
+
+      return { budgets, error };
+    } catch (error: any) {
+      console.log(error);
+      return { error: error.message };
+    }
+  }
+  async createBudgetIncome(formData: {category_id: string | number,budget_expected: number,user_uuid: string, month?: number, year?:number}) {
+    try {
+      if (!formData.category_id || !formData.user_uuid) {
+        throw new Error('Los parametros son obligatorios');
+      }
+      const date = new Date();
+      const AAAA = formData.year? formData.year : date.getFullYear();
+      const MM = formData.month ? formData.month : date.getMonth() + 1;
+      const DD = 1;
+      const formattedDate = `${AAAA}-${MM.toString().padStart(2, '0')}-${DD.toString().padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
+
+      const { data: budgets, error } = await this.supabase
+        .from('budgets_incomes')
+        .insert([
+          {
+            budget_date: formattedDate,
+            category_id: formData.category_id,
+            budget_expected: formData.budget_expected,
+            user_uuid: formData.user_uuid,
+          },
+        ])
+        .select('*');
+
+      if (error) {
+        throw new Error('Error al crear el presupuesto');
+      }
+
+      return { budgets, error };
+    } catch (error: any) {
+      console.log(error);
+      return { error: error.message };
+    }
+  }
   async updateBudgetExpense(
     id_budget: string | number,
     budget_expected: number,
@@ -631,37 +708,22 @@ export class SupabaseService {
       return { error: error.message };
     }
   }
-  async createBudgetExpense(
-    category_id: string | number,
+  async updateBudgetIncome(
+    id_budget: string | number,
     budget_expected: number,
-    user_uuid: string,
   ) {
     try {
-      if (!category_id || !user_uuid) {
+      if (!id_budget || !budget_expected) {
         throw new Error('Los parametros son obligatorios');
       }
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = 1;
-      const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day
-        .toString()
-        .padStart(2, '0')}`; // Formatea los componentes de la fecha en el formato deseado
-
       const { data: budgets, error } = await this.supabase
-        .from('budgets')
-        .insert([
-          {
-            budget_date: formattedDate,
-            category_id,
-            budget_expected,
-            user_uuid,
-          },
-        ])
+        .from('budgets_incomes')
+        .update({ budget_expected })
+        .eq('id', id_budget)
         .select('*');
 
       if (error) {
-        throw new Error('Error al crear el presupuesto');
+        throw new Error('Error al actualizar el presupuesto');
       }
 
       return { budgets, error };
@@ -670,4 +732,112 @@ export class SupabaseService {
       return { error: error.message };
     }
   }
+  async createManyBudgetsIncomes(){
+    const arrayMany = [
+      {category_name: 'hola1', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description1'},
+      {category_name: 'hola2', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description2'},
+      {category_name: 'hola3', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description3'},
+      {category_name: 'hola4', user_uuid: 'beb95f5f-4b53-46ee-8003-e413a935c419', category_income_description: 'description4'},
+    ]
+    const { data, error } = await this.supabase
+    .from('category_income')
+    .insert(arrayMany)
+    .select()
+
+    console.log('juaaaaan', data);
+  }
+  async deleteBudgetExpense(budget_id: number | string){
+    const { error } = await this.supabase
+    .from('budgets')
+    .delete()
+    .eq('id', budget_id)
+    return error;
+  }
+  async deleteBudgetIncome(budget_id: number | string){
+    const { error } = await this.supabase
+    .from('budgets_incomes')
+    .delete()
+    .eq('id', budget_id)
+    return error;
+  }
+  // Estado de Perdidas y Ganancias
+  async getGananciasPerdidasExpenses(user_uuid: string, month?:number, year?:number) {
+    const currentDate = new Date();
+    const currentYear = year? year :  currentDate.getFullYear();
+    const currentMonth = month? month: currentDate.getMonth() + 1;
+  
+    // Primero, obtenemos la información de la tabla category_expense
+    const { data: categoryData, error: categoryError } = await this.supabase
+      .from('budgets_view')
+      .select('category_id, category_name, user_uuid, budget_expected')
+      .eq('user_uuid', user_uuid)
+      .gte('bugget_date', `${currentYear}-${currentMonth}-01`)
+      .lt('bugget_date', `${currentYear}-${currentMonth + 1}-01`);
+  
+    // Luego, obtenemos la información relacionada de la tabla expenses
+    const { data: expensesData, error: expensesError } = await this.supabase
+      .from('expenses')
+      .select('category_expense_id, expense_date, expense_amount, user_uuid')
+      .eq('user_uuid', user_uuid)
+      .gte('expense_date', `${currentYear}-${currentMonth}-01`)
+      .lt('expense_date', `${currentYear}-${currentMonth + 1}-01`);
+  
+    // Ahora combinamos los resultados usando el user_uuid como clave
+    const gananciasPerdidasData = categoryData?.map((category) => {
+      let sum:number= 0;
+      const relatedExpenses = expensesData?.filter(
+        
+        (expense) => {
+          if (expense.category_expense_id === category.category_id) {
+            sum += expense.expense_amount;
+            return true
+          } else {
+            return false
+          }}
+      );
+      return { ...category, data: relatedExpenses, sum };
+    });
+  
+    return { data: gananciasPerdidasData, error: categoryError || expensesError };
+  }
+  async getGananciasPerdidasIncomes(user_uuid: string, month?:number, year?:number) {
+    const currentDate = new Date();
+    const currentYear = year? year :  currentDate.getFullYear();
+    const currentMonth = month? month: currentDate.getMonth() + 1;
+  
+    // Primero, obtenemos la información de la tabla category_expense
+    const { data: categoryData, error: categoryError } = await this.supabase
+      .from('budgets_incomes_view')
+      .select('id,category_id, category_name, user_uuid, budget_expected')
+      .eq('user_uuid', user_uuid)
+      .gte('bugget_date', `${currentYear}-${currentMonth}-01`)
+      .lt('bugget_date', `${currentYear}-${currentMonth + 1}-01`);
+
+    // Luego, obtenemos la información relacionada de la tabla expenses
+    const { data: incomeData, error: expensesError } = await this.supabase
+      .from('income')
+      .select('category_income_id, income_date, income_amount, user_uuid')
+      .eq('user_uuid', user_uuid)
+      .gte('income_date', `${currentYear}-${currentMonth}-01`)
+      .lt('income_date', `${currentYear}-${currentMonth + 1}-01`);
+  
+    // Ahora combinamos los resultados usando el user_uuid como clave
+    const gananciasPerdidasData = categoryData?.map((category) => {
+      let sum:number= 0;
+      const relatedIncome = incomeData?.filter(
+        
+        (income) => {
+          if (income.category_income_id === category.category_id) {
+            sum += income.income_amount;
+            return true
+          } else {
+            return false
+          }}
+      );
+      return { ...category, data: relatedIncome, sum };
+    });
+  
+    return { data: gananciasPerdidasData, error: categoryError || expensesError };
+  }
+  
 }

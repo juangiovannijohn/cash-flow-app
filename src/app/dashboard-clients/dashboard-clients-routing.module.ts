@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardClientsComponent } from './dashboard-clients.component';
 import { SaldoWalletComponent } from './saldo-wallet/saldo-wallet.component';
 import { PerfilUsuarioComponent } from './perfil-usuario/perfil-usuario.component';
-import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 import { NewTransactionComponent } from './new-transaction/new-transaction.component';
 
 const routes: Routes = [

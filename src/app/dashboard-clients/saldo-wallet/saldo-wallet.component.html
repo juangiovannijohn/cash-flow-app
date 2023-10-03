@@ -1,4 +1,7 @@
 <div class="text-text w-full  p-4 sm:pt-10 md:pt-20 sm:px-14 md:pr-20">
+  <ng-container  *ngIf="isPremium">
+    <app-cashflow></app-cashflow>
+  </ng-container>
   <div class="w-full">
     <h2 class="text-lg text-start font-semibold text-accent mb-2">Balance mensual</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-3">
@@ -20,12 +23,15 @@
             <p [ngClass]="budget.class" class="text-center font-medium text-base leading-none"> {{budget.budget_sum |
               ARS}} </p>
           </div>
+          <ng-container *ngIf="budget.noBudgetAmount">
+          <a routerLink="/intranet/perfil" [ngClass]="budget.over? 'text-text': 'text-red'"  class="text-[10px] font-thin underline">Asignar monto a gastar</a>
+        </ng-container>
         </div>
       </ng-container>
     </div>
     <div class="my-3">
       <button routerLink="/intranet/perfil" fragment="categorias_personalizadas"
-        class="bg-primary text-text py-1 px-3 rounded-md hover:bg-accent hover:shadow-md">
+        class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
         Editar Presupuesto
       </button>
     </div>
@@ -57,14 +63,14 @@
           <!-- Form -->
           <div class="grid grid-cols-1 ">
             <div class="mb-1 grid grid-cols-4">
-              <label class=" text-sm" for="budget_amount">Monto</label>
-              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3" type="number"
+              <label class="  text-xs" for="budget_amount">Monto</label>
+              <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 col-span-3" type="number"
                 id="budget_amount" [(ngModel)]="tr.amount" />
             </div>
             <div class="mb-1 grid grid-cols-4">
               <!-- Categoria de gastos -->
-              <label class=" text-sm col-span-1">Categoría</label>
-              <select  *ngIf="tr.typeExpense" class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3"
+              <label class="  text-xs col-span-1">Categoría</label>
+              <select  *ngIf="tr.typeExpense" class="bg-backg rounded-sm text-xs p-1 w-full text-text text-opacity-50 col-span-3"
                 [(ngModel)]="selectedCategoryId">
                 <option class="uppercase" [ngValue]="tr.category_id" selected>{{tr.category_name}}</option>
                 <ng-container *ngFor="let cat of expensesCategories">
@@ -72,7 +78,7 @@
                 </ng-container>
               </select>
               <!-- Categoria de ingresos -->
-              <select  *ngIf="!tr.typeExpense" class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3"
+              <select  *ngIf="!tr.typeExpense" class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 col-span-3"
                 [(ngModel)]="selectedCategoryId">
                 <option class="uppercase" [ngValue]="tr.category_id"  selected>{{tr.category_name}}</option>
                 <ng-container *ngFor="let cat of incomeCategories">
@@ -81,20 +87,20 @@
               </select>
             </div>
             <div class="mb-1 grid grid-cols-4">
-              <label class=" text-sm col-span-1" for="">Descripción</label>
-              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="text"
+              <label class="  text-xs col-span-1" for="">Descripción</label>
+              <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="text"
                 [(ngModel)]="tr.description">
             </div>
             <div class="mb-1 grid grid-cols-4">
-              <label class=" text-sm col-span-1" for="">Fecha</label>
-              <input class="bg-backg rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="date"
+              <label class="  text-xs col-span-1" for="">Fecha</label>
+              <input class="bg-backg text-xs rounded-sm p-1 w-full text-text text-opacity-50 col-span-3 " name="" type="date"
                 [(ngModel)]="tr.date">
             </div>
           </div>
           
           <!-- Buttons -->
             <div class="my-2 flex flex-row justify-between">
-              <button class="bg-primary py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"
+              <button class="bg-gris text-accent border opacity-60 hover:opacity-100  text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg ease-in-out duration-200"
                 (click)="updateTransaction(tr.typeExpense, tr.id, selectedCategoryId, tr.description, tr.amount, tr.date  )">
                 Actualizar</button>
               <button class="text-red py-1 px-3 rounded-md opacity-80 hover:opacity-100 ease-in-out duration-200"

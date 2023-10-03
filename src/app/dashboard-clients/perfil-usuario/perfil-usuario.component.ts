@@ -1,10 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthSession } from '@supabase/supabase-js'
-import { sqlInjectionValidator } from 'src/app/core/helpers/sqlInjectionValidator';
 import { UserRoles } from 'src/app/core/models-interface/enums';
-import { Profile, SupabaseService } from 'src/app/core/shared/services/supabase.service';
+import { SupabaseService } from 'src/app/core/shared/services/supabase.service';
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -17,16 +15,25 @@ export class PerfilUsuarioComponent implements OnInit {
   loading = false
   categoriesExpenses: any[] | null = []
   categoriesIncomes: any[] | null = []
-  // showDetails: boolean = false;
+  categoriesExpensesNonBudgeted : any[] = []
+  categoriesIncomesNonBudgeted : any[] = []
   showFormNewExpense: boolean = false;
   showFormNewIncome: boolean = false;
-  categoryExpensesForm: FormGroup;
-  categoryIncomeForm: FormGroup;
+  budgetExpensesForm: FormGroup;
+  budgetIncomeForm: FormGroup;
   updateProfileForm: FormGroup;
   showModal: boolean = false;
   showAlert: boolean = false;
   classesModal: string = '';
   messageModal: string = '';
+  totalBudgetExpenses:number = 0;
+  totalBudgetIncomes:number = 0;
+  currentMonth: number = 0;
+  currentYear: number = 0;
+
+  //Oldbudgets
+  titleOldBudgets: string = 'Presupuestos anteriores'
+
 
   constructor(private readonly supabase: SupabaseService, private formBuilder: FormBuilder, private router: Router, private route: ActivatedRoute) {
     this.updateProfileForm = this.formBuilder.group({
@@ -35,20 +42,26 @@ export class PerfilUsuarioComponent implements OnInit {
       website: ['', Validators.required],
     })
 
-    this.categoryExpensesForm = this.formBuilder.group({
-      category_name: ['', [Validators.required, sqlInjectionValidator(/['";\-\-]/)]],
-      category_expense_description: ['', sqlInjectionValidator(/['";\-\-]/)],
-      budget_amount: [0, [Validators.min(0)]]
+    this.budgetExpensesForm = this.formBuilder.group({
+      budget_expected: ['', [Validators.required,Validators.min(0)]],
+      category_id:  ['', Validators.required],
+      // month: ['', [Validators.required, Validators.max(12), Validators.min(1), Validators.minLength(1), Validators.maxLength(2)]],
+      // year: ['', [Validators.required, Validators.max(9999), Validators.min(2020), Validators.minLength(4), Validators.maxLength(4)]]
     });
-    this.categoryIncomeForm = this.formBuilder.group({
-      category_name: ['', [Validators.required, sqlInjectionValidator(/['";\-\-]/)]],
-      category_income_description: ['', sqlInjectionValidator(/['";\-\-]/)]
+    this.budgetIncomeForm = this.formBuilder.group({
+      budget_expected: ['', [Validators.required,Validators.min(0)]],
+      category_id:  ['', Validators.required],
+      // month: ['', [Validators.required, Validators.max(12), Validators.min(1), Validators.minLength(1), Validators.maxLength(2)]],
+      // year: ['', [Validators.required, Validators.max(9999), Validators.min(2020), Validators.minLength(4), Validators.maxLength(4)]]
     });
   }
 
   async ngOnInit(): Promise<void> {
+    const currentDate = new Date();
+    this.currentYear =  currentDate.getFullYear();
+    this.currentMonth = currentDate.getMonth() + 1;
     this.user = await this.supabase.getUser();
-    this.getProfile(this.user);
+    this.getProfile(this.user, this.currentYear,this.currentMonth );
     this.updateProfileForm.patchValue({
       username: this.user?.username,
       full_name: this.user?.full_name,
@@ -57,11 +70,11 @@ export class PerfilUsuarioComponent implements OnInit {
 
   }
 
-  async getProfile(user: any) {
+  async getProfile(user: any, currentYear?:number, currentMonth?:number) {
     try {
       const role = user && user.user_metadata['role'] ? user.user_metadata['role'] : user.user_meta.role;
       if (role == UserRoles.Normal || role == UserRoles.Premium) {
-        this.getCategories(user.id);
+        this.getCategories(user.id, currentYear, currentMonth);
       } else {
         console.log('se cerro sesion')
         this.supabase.signOut();
@@ -98,203 +111,189 @@ export class PerfilUsuarioComponent implements OnInit {
     }
   }
 
-  getCategories(user_uuid: string) {
+  async getCategories(user_uuid: string, year?:number, month?:number) {
     //gastos
-    this.supabase.getCategoriesExpenses(user_uuid).then(resp => {
+    this.supabase.getCategoriesExpenses(user_uuid, year, month).then(resp => {
       if (resp.error) {
         console.warn(resp.error)
       } else {
-        this.categoriesExpenses = resp.category_expense_view
+        this.categoriesExpenses = resp.category_expense_view;
+        this.getCategoriesExpensesNonBudgeted(resp.category_expense_view);
+        let budgetAmount = 0
+        const categoriesOrdered = resp.category_expense_view?.map(item=>{
+          budgetAmount += item['budget_expected'] ? item['budget_expected'] : 0
+        });
+        this.totalBudgetExpenses = budgetAmount
       }
     })
     //ingresos
-    this.supabase.getCategoriesIncome(user_uuid).then(resp => {
+    this.supabase.getCategoriesIncome(user_uuid, year, month).then(resp => {
       if (resp.error) {
         console.warn(resp.error)
       } else {
-        this.categoriesIncomes = resp.category_income
+        this.categoriesIncomes = resp.category_income;
+        this.getCategoriesIncomesNonBudgeted(resp.category_income);
+        let budgetAmount = 0
+        const categoriesOrdered = resp.category_income?.map(item=>{
+          budgetAmount += item['budget_expected'] ? item['budget_expected'] : 0
+        });
+        this.totalBudgetIncomes = budgetAmount
       }
     })
-  }
-  createCategoryExpense() {
-    if (!this.categoryExpensesForm.valid) {
-      this.openAlert('text-red', 'Campos inválidos');
-      this.categoryExpensesForm.reset();
-      return
-    } else {
-      const category_name = this.categoryExpensesForm.value.category_name
-      const user_uuid = this.user.id
-      const category_expense_description = this.categoryExpensesForm.value.category_expense_description
-      const budget_amount = this.categoryExpensesForm.value.budget_amount
-      this.supabase.createCategoryExpense(category_name, user_uuid, category_expense_description, budget_amount).then(
-        resp => {
-          if (resp.error) {
-            this.openAlert('text-red', 'Ha ocurrido algun error al crear la categoría, intente nuevamente.');
-            console.warn(resp.error)
-          } else {
-            setTimeout(() => {
-              location.reload();
-            }, 200)
-          }
-        }
-      )
-    }
+    
   }
 
-  createCategoryIncome() {
-    if (!this.categoryIncomeForm.valid) {
-      this.openAlert('text-red', 'Campos inválidos');
-      this.categoryExpensesForm.reset();
-      return
-    } else {
-      const category_name = this.categoryIncomeForm.value.category_name
-      const user_uuid = this.user.id
-      const category_income_description = this.categoryIncomeForm.value.category_income_description
-      this.supabase.createCategoryIncome(category_name, user_uuid, category_income_description).then(
-        resp => {
-          if (resp.error) {
-            this.openAlert('text-red', 'Ha ocurrido algun error al crear la categoría, intente nuevamente.');
-            console.warn(resp.error)
-          } else {
-            setTimeout(() => {
-              location.reload();
-            }, 200)
-          }
+  getCategoriesOldExpenses(year:number, month:number){
+    this.currentMonth= month;
+    this.currentYear = year;
+    this.getCategories(this.user.id, year, month);
+  }
+
+  //Metodo que filtra las categorias no presupuestadas.
+ async getCategoriesExpensesNonBudgeted(categoriesExpenses: any[] | null,categoriesIncomes?:any[],  year?:number, month?:number){
+    const allCategoriesExpenses = await this.supabase.getAllCategoriesExpensesByUser(this.user.id).then( resp => !resp.error? resp.category_expenses : [])
+    const expenses = allCategoriesExpenses && categoriesExpenses ? allCategoriesExpenses.filter(objA => {
+      return !categoriesExpenses.some(objB => objB.id == objA.id);
+    }): [];
+    this.categoriesExpensesNonBudgeted = expenses
+  }
+    //Metodo que filtra las categorias no presupuestadas.
+ async getCategoriesIncomesNonBudgeted(categoriesIncomes: any[] | null,  year?:number, month?:number){
+  const allCategoriesIncomes = await this.supabase.getAllCategoriesIncomesByUser(this.user.id).then( resp => !resp.error? resp.category_incomes : [])
+  const incomes = allCategoriesIncomes && categoriesIncomes ? allCategoriesIncomes.filter(objA => {
+    return !categoriesIncomes.some(objB => objB.id == objA.id);
+  }): [];
+  this.categoriesIncomesNonBudgeted = incomes
+}
+  //CREATE
+  createBudgetExpense( ){
+    if (this.budgetExpensesForm.valid) {
+      const formData = {
+        category_id: this.budgetExpensesForm.value.category_id,
+        budget_expected: this.budgetExpensesForm.value.budget_expected,
+        user_uuid: this.user.id,
+        // month: this.budgetExpensesForm.value.month,
+        // year: this.budgetExpensesForm.value.year,
+      }
+      this.supabase.createBudgetExpense(formData).then(resp =>{
+        if(resp.error){
+          this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${resp.error.message}`);
+        }else{
+          this.getCategories(this.user.id, this.currentYear, this.currentMonth);
+          this.showFormNewExpense= false
         }
-      )
+      })
+      .catch(err =>{ 
+        this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${err.message}`);
+        console.log(err)})
+    
+    }else{
+      this.openAlert('text-red', `Los campos del formulario son incorrectos.`);
     }
   }
-  updateCategoryExpense(id_expense: string | number, category_name: string, category_expense_description: string, budget_expected: number, budget_id: number | string) {
-    if (!category_name) {
-      this.openAlert('text-red', 'El nombre de la categoria es obligatorio');
-      return
-    } else {
-      this.supabase.updateCategoryExpense(id_expense, category_name, category_expense_description).then(resp => {
-        if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al actualizar la categoría, intente nuevamente.');
-          console.warn(resp.error)
-        } else {
-          setTimeout(() => {
-            location.reload();
-          }, 200)
-        }
-      })
-    }
+  createBudgetIncome(){
+    if (this.budgetIncomeForm.valid) {
+      const formData = {
+        category_id: this.budgetIncomeForm.value.category_id,
+        budget_expected: this.budgetIncomeForm.value.budget_expected,
+        user_uuid: this.user.id,
+        // month: this.budgetIncomeForm.value.month,
+        // year: this.budgetIncomeForm.value.year,
+      }
+    this.supabase.createBudgetIncome(formData).then(resp =>{
+      if(resp.error){
+        this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${resp.error.message}`);
+      }else{
+        this.getCategories(this.user.id, this.currentYear, this.currentMonth);
+      }
+    })
+    .catch(err =>{ 
+      this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${err.message}`);
+      console.log(err)})
+  }else{
+    this.openAlert('text-red', `Los campos del formulario son incorrectos.`);
+  }
+  }
+  
+  //UPDATE
+  updateBudgetExpense(budget_id: string | number, budget_expected: number) {
 
-    //Actualizacion o creacion de presupuesto
-    if (!budget_id) {
-      this.supabase.createBudgetExpense(id_expense, budget_expected, this.user.id).then(resp => {
-        if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al crear el valor del presupuesto, intente nuevamente.');
-          console.warn(resp.error)
-        } else {
-          console.log('presupuesto creado')
-        }
-      })
-    } else {
       this.supabase.updateBudgetExpense(budget_id, budget_expected).then(resp => {
         if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al actualizar el valor del presupuesto, intente nuevamente.');
+          this.openAlert('text-red',`Ha ocurrido algún error al actualizar el valor del presupuesto, intente nuevamente. ${resp.error.message}`);
           console.warn(resp.error)
         } else {
-          console.log('presupuesto actualizado')
+          this.getCategories(this.user.id, this.currentYear, this.currentMonth);
         }
       })
-    }
-
-
+      .catch(err =>{ 
+        this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${err.message}`);
+        console.log(err)})
   }
 
-  updateCategoryIncome(id_income: string | number, category_name: string, category_income_description: string) {
-    if (!category_name) {
-      this.openAlert('text-red', 'El nombre de la categoria es obligatorio');
-      return
-    } else {
-      this.supabase.updateCategoryIncome(id_income, category_name, category_income_description).then(resp => {
-
+  updateBudgetIncome(budget_id: string | number, budget_expected: number) {
+      this.supabase.updateBudgetIncome(budget_id, budget_expected).then(resp => {
         if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al actualizar la categoría, intente nuevamente.');
+          this.openAlert('text-red', `Ha ocurrido algún error al actualizar el valor del presupuesto, intente nuevamente. ${resp.error.message}`);
           console.warn(resp.error)
         } else {
-          setTimeout(() => {
-            location.reload();
-          }, 200)
+          this.getCategories(this.user.id, this.currentYear, this.currentMonth);
         }
       })
+      .catch(err =>{ 
+        this.openAlert('text-red', `Ha ocurrido algún error al crear el presupuesto. ${err.message}`);
+        console.log(err)})
     }
-  }
 
-  deleteCategoryExpense(id_expense: string | number) {
-    if (!id_expense) {
+// DELETE
+  deleteBudgetExpense(budget_id: string | number) {
+    if (!budget_id) {
       this.openAlert('text-red', 'Error, intente nuevamente.');
       return
     } else {
-      this.supabase.deleteCategoryExpense(id_expense).then(resp => {
-
-        if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al eliminar la categoría, intente nuevamente.');
-          console.warn(resp.error)
+      this.supabase.deleteBudgetExpense(budget_id).then(error => {
+        if (error) {
+          this.openAlert('text-red', `Ha ocurrido algún error al eliminar la categoría, intente nuevamente. ${error.message}`);
+          console.warn(error)
         } else {
-          setTimeout(() => {
-            location.reload();
-          }, 200)
+            this.getCategories(this.user.id, this.currentYear, this.currentMonth);
         }
       }
       )
     }
   }
 
-  deleteCategoryIncome(id_income: string | number) {
-    if (!id_income) {
+  deleteBudgetIncome(budget_id: string | number) {
+    if (!budget_id) {
       this.openAlert('text-red', 'Error, intente nuevamente.');
       return
     } else {
-      this.supabase.deleteCategoryIncome(id_income).then(resp => {
-
-        if (resp.error) {
-          this.openAlert('text-red', 'Ha ocurrido algun error al eliminar la categoría, intente nuevamente.');
-          console.warn(resp.error)
+      this.supabase.deleteBudgetIncome(budget_id).then(error => {
+        if (error) {
+          this.openAlert('text-red', `Ha ocurrido algún error al eliminar la categoría, intente nuevamente. ${error.message}`);
+          console.warn(error)
         } else {
-          setTimeout(() => {
-            location.reload();
-          }, 200)
+            this.getCategories(this.user.id, this.currentYear, this.currentMonth);
         }
       }
       )
     }
   }
-
+  deleteCategory(budget_id: number | string, expense_boolean: boolean) {
+    if (expense_boolean) {
+            this.deleteBudgetExpense(budget_id);
+    } else {
+            this.deleteBudgetIncome(budget_id);
+    }
+  }
+  crearMucho(){
+    this.supabase.createManyBudgetsIncomes().then(resp=> {
+    })
+    .catch(error => console.log(error))
+  }
   openModal() {
     this.showModal = true;
   }
-
-  deleteCategory(id_category: number | string, expense_boolean: boolean) {
-    if (expense_boolean) {
-      this.supabase.checkCategoryExpense(id_category).then(
-        resp => {
-          if (resp.expenses?.length == 0) {
-            this.deleteCategoryExpense(id_category);
-
-          } else {
-            this.closeModal();
-            this.openAlert('text-red', 'No puede eliminar una categoría que tiene gastos registrados.');
-          }
-        }
-      )
-    } else {
-      this.supabase.checkCategoryIncome(id_category).then(
-        resp => {
-          if (resp.incomes?.length == 0) {
-            this.deleteCategoryIncome(id_category);
-          } else {
-            this.closeModal();
-            this.openAlert('text-red', 'No puede eliminar una categoría que tiene gastos o ingresos registrados.');
-          }
-        }
-      )
-    }
-  }
-
   closeModal() {
     this.showModal = false;
   }
@@ -307,5 +306,10 @@ export class PerfilUsuarioComponent implements OnInit {
     this.messageModal = '';
     this.classesModal = '';
     this.showAlert = false;
+  }
+  reloadWindow(time: number) {
+    setTimeout(() => {
+      location.reload();
+    }, time);
   }
 }
