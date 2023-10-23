@@ -23,6 +23,7 @@ export class SaldoWalletComponent implements OnInit {
   showAlert: boolean = false;
   classesModal:string = '';
   messageModal:string = '';
+  filter:boolean = false
 
   //old budgets
   titleOldBudgets:string = 'Balances anteriores'
@@ -85,10 +86,9 @@ export class SaldoWalletComponent implements OnInit {
     }
   }
 
-  async getTransactions(user_uuid:string, year?:number, month?:number) {
+  async getTransactions(user_uuid:string, year?:number, month?:number, category_id?:number | null) {
     let newArray: any[] = [];
-
-    await this.supabase.getExpensesHistory(user_uuid, year, month).then(resp => {
+    await this.supabase.getExpensesHistory(user_uuid, year, month, category_id).then(resp => {
       if (!resp.error && resp.expense_history) {
         resp.expense_history.map((item: any) => { item.typeExpense = true; item.showFormEdit = false; return item })
         newArray = newArray.concat(resp.expense_history);
@@ -97,7 +97,7 @@ export class SaldoWalletComponent implements OnInit {
       }
     });
 
-    await this.supabase.getIncomesHistory(user_uuid, year, month).then(resp => {
+    await this.supabase.getIncomesHistory(user_uuid, year, month, category_id).then(resp => {
       if (!resp.error && resp.income_history) {
         resp.income_history.map((item: any) => { item.typeExpense = false; item.showFormEdit = false; return item })
         newArray = newArray.concat(resp.income_history);
@@ -140,6 +140,7 @@ export class SaldoWalletComponent implements OnInit {
     this.supabase.getBudgets(user_uuid, year, month).then((resp) => {
       if (!resp.error) {
         const budMap = resp.budgets?.map((item: any) => {
+          console.log(item)
           item.noBudgetAmount = false
           if (item.budget_expected == 0) {
             item.noBudgetAmount = true
@@ -266,5 +267,11 @@ export class SaldoWalletComponent implements OnInit {
     }
   
     return mesesEnEspanol[month - 1].charAt(0).toUpperCase() + mesesEnEspanol[month - 1].slice(1);
+  }
+  filterTurnOff(){
+    this.filter = !this.filter
+    if(!this.filter){
+      this.getTransactions(this.user.id, this.currentYear, this.currentMonth, null);
+    }
   }
 }

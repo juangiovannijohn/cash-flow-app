@@ -164,7 +164,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-3">
       <ng-container *ngFor="let budget of budgets">
         <!-- CARD -->
-        <div [ngClass]="budget.over? 'bg-red': 'bg-gris'" class=" w-full p-2 rounded-md grid grid-cols-1 ">
+        <div (click)="getTransactions(user.id, currentYear, currentMonth, budget.category_id  ); filter = true" [ngClass]="budget.over? 'bg-red': 'bg-gris'" class=" w-full p-2 rounded-md grid grid-cols-1 hover:cursor-pointer">
           <div class="col-span-1 flex flex-col justify-center gap-0 mb-3">
             <p class="text-xs text-start tracking-wider uppercase">{{budget.bugget_date | date:'MMM yyyy'}}</p>
             <p class=" text-accent font-medium text-sm uppercase tracking-wider">{{ budget.category_name }} <span
@@ -210,7 +210,16 @@
   (currentYear)="getCategoriesOldExpenses($event, currentMonth)">
   </app-old-budgets>
   <div class="w-full">
-    <h2 class="text-lg text-start font-semibold text-accent mb-2">Historial</h2>
+    <div class="flex flex-row justify-start gap-2 my-3">
+      <h2 class="text-lg text-start font-semibold text-accent">Historial</h2>
+      <ng-container *ngIf="filter">
+        <button (click)="filterTurnOff()"
+          class="bg-gris text-accent border   text-sm py-1 px-3 rounded-md hover:bg-accent hover:shadow-md hover:text-backg">
+          Borrar filtros
+        </button>
+      </ng-container>
+    </div>
+
     <div class="grid grid-cols-1">
       <ng-container *ngFor="let tr of transactionsHistory">
         <!-- CARD -->

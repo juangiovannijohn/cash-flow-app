@@ -536,32 +536,36 @@ export class SupabaseService {
     return { data, error };
   }
 
-  async getExpensesHistory(user_uuid: string, year?:number, month?:number) {
+  async getExpensesHistory(user_uuid: string, year?:number, month?:number, category_id:number | null=null) {
     const currentDate = new Date();
     const currentYear = year ? year : currentDate.getFullYear();
     const currentMonth = month ? month : currentDate.getMonth() + 1;
 
-    const { data: expense_history, error } = await this.supabase
-      .from('expense_history_new')
-      .select('*')
-      .eq('user_uuid', user_uuid)
+    let query = this.supabase.from('expense_history_new').select('*').eq('user_uuid', user_uuid);
+
+    if (category_id !== null) {
+      query = query.eq('category_id', category_id);
+    }
+  
+    const { data: expense_history, error } = await query
       .gte('date', `${currentYear}-${currentMonth}-01`)
       .lt('date', `${currentYear}-${currentMonth + 1}-01`);
-
+  
     return { expense_history, error };
   }
 
-  async getIncomesHistory(user_uuid: string, year?:number, month?:number) {
+  async getIncomesHistory(user_uuid: string, year?:number, month?:number, category_id:number | null=null) {
     const currentDate = new Date();
     const currentYear = year ? year : currentDate.getFullYear();
     const currentMonth = month ? month : currentDate.getMonth() + 1;
+    let query = this.supabase.from('income_history_new').select('*').eq('user_uuid', user_uuid);
+    if (category_id !== null) {
+      query = query.eq('category_id', category_id);
+    }
+    const { data: income_history, error } = await query
+    .gte('date', `${currentYear}-${currentMonth}-01`)
+    .lt('date', `${currentYear}-${currentMonth + 1}-01`);
 
-    let { data: income_history, error } = await this.supabase
-      .from('income_history_new')
-      .select('*')
-      .eq('user_uuid', user_uuid)
-      .gte('date', `${currentYear}-${currentMonth}-01`)
-      .lt('date', `${currentYear}-${currentMonth + 1}-01`);
     return { income_history, error };
   }
   async updateExpense(
