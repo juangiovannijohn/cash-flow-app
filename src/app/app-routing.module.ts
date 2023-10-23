@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'signup', component: SignupComponent},
   {path: 'reset', component: RequestResetPasswordComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
-  {path: 'access-token', component: ResetPasswordComponent},
+ // {path: 'access-token', component: ResetPasswordComponent},
   {path: 'landing', component: HomeComponent},
   {path: 'blog', component: BlogComponent },
   {path: 'pricing', component: PricingComponent },
